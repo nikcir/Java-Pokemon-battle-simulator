@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch JavaFX App",
+            "request": "launch",
+            "mainClass": "com.nikolai.App",
+            "classPaths": [
+                "${workspaceFolder}/target/classes",
+                "${workspaceFolder}/target/dependency/*"
+            ],
+            "console": "integratedTerminal"
+        }
+    ]
+}

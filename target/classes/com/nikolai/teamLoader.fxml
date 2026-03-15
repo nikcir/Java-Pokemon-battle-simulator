@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+
+<VBox spacing="10"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.nikolai.TeamLoaderController"
+      style="-fx-padding: 20;">
+
+    <Button text="Back" onAction="#goBack"/>
+    <Label text="Team Loader"/>
+
+    <VBox spacing="10">
+        <TextField fx:id="teamName" promptText="Enter team name"/>
+        <Button text="Load Team" onAction="#onLoadTeam"/>
+        <Button text="Delete Team" onAction="#onDeleteTeam"/>
+        <Button text="Show All Teams" onAction="#onShowAllTeams"/>
+    </VBox>
+
+    <VBox spacing="10">
+        <Label fx:id="teamLabel" text="Team: "/>
+    </VBox>
+
+</VBox>

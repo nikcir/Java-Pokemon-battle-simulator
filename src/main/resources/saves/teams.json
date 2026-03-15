@@ -1,0 +1,96 @@
+{
+  "sigma2": [
+    {
+      "name": "PIKA",
+      "heldItem": "orb",
+      "moves": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ]
+    },
+    {
+      "name": "PIKA",
+      "heldItem": "orb",
+      "moves": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ]
+    },
+    {
+      "name": "PIKA",
+      "heldItem": "orb",
+      "moves": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ]
+    }
+  ],
+  "sigma3": [
+    {
+      "name": "PIKA",
+      "heldItem": "orb",
+      "moves": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ]
+    },
+    {
+      "name": "PIKA",
+      "heldItem": "orb",
+      "moves": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ]
+    },
+    {
+      "name": "PIKA",
+      "heldItem": "orb",
+      "moves": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ]
+    },
+    {
+      "name": "pikachu",
+      "heldItem": "light-ball",
+      "moves": [
+        "surf",
+        "grass-knot",
+        "fake-out",
+        "thunderbolt"
+      ]
+    },
+    {
+      "name": "raichu",
+      "heldItem": "light-ball",
+      "moves": [
+        "surf",
+        "grass-knot",
+        "fake-out",
+        "thunderbolt"
+      ]
+    },
+    {
+      "name": "rayqauza",
+      "heldItem": "light-ball",
+      "moves": [
+        "surf",
+        "grass-knot",
+        "fake-out",
+        "thunderbolt"
+      ]
+    }
+  ]
+}
