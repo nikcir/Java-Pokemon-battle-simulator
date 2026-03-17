@@ -1,5 +1,6 @@
 package com.nikolai;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 // import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,6 +26,8 @@ public class TeamCreatorController {
 
     private final TeamStorageService storageService = new TeamStorageService();
 
+    private final PokeApiService pokeApiService = new PokeApiService();
+
     @FXML
     public void goBack() throws IOException {
         App.switchTo("main.fxml");
@@ -33,6 +36,7 @@ public class TeamCreatorController {
     @FXML
     public void onAddPokemon() {
         String pokemonName = pokemonField.getText().trim();
+
         String heldItem = itemField.getText().trim();
         List<String> moves = List.of(
             moveField1.getText().trim(),
@@ -41,11 +45,27 @@ public class TeamCreatorController {
             moveField4.getText().trim()
         );
 
-        if (pokemonName.isEmpty()) return;
+        // if (pokemonName.isEmpty()) return;
 
-        TeamPokemon newPokemon = new TeamPokemon(pokemonName, heldItem, moves);
-        team.add(newPokemon);
-        teamLabel.setText(teamLabel.getText() + "\n" + newPokemon.getName() + " @ " + newPokemon.getHeldItem() + " with moves: " + String.join(", ", newPokemon.getMoves()));
+        Task<Pokemon> task = new Task<>() {
+            @Override
+            protected Pokemon call() throws Exception {
+                return pokeApiService.getPokemon(pokemonName);
+            }
+        };
+// ww
+        task.setOnSucceeded(e -> {
+            TeamPokemon newPokemon = new TeamPokemon(pokemonName, heldItem, moves);
+            team.add(newPokemon);
+            teamLabel.setText(teamLabel.getText() + "\n" + newPokemon.getName() + " @ " + newPokemon.getHeldItem() + " with moves: " + String.join(", ", newPokemon.getMoves()));
+
+        });
+
+        task.setOnFailed(e -> {
+            System.err.println("Failed to fetch pokemon: " + task.getException());
+            pokemonField.setText("Pokemon not found");
+        });
+
     }
 
     @FXML

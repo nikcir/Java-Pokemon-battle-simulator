@@ -4,17 +4,12 @@ com\nikolai\Pokemon$Type.class
 com\nikolai\Pokemon$AbilitySlot.class
 com\nikolai\Battle.class
 com\nikolai\Pokemon.class
-com\nikolai\TeamStorageService.class
-com\nikolai\TeamCreatorController.class
 com\nikolai\StatusEffect.class
-com\nikolai\TeamLoaderController.class
 com\nikolai\PokemonController$1.class
 com\nikolai\Player.class
-com\nikolai\TeamPokemon.class
 com\nikolai\TypeChart.class
 com\nikolai\MainController.class
 com\nikolai\MoveEffect.class
-com\nikolai\PlayerTeam.class
 com\nikolai\Pokemon$TypeSlot.class
 com\nikolai\Move$Type.class
 com\nikolai\Ability.class
@@ -24,6 +19,5 @@ com\nikolai\App.class
 com\nikolai\Pokemon$Stat.class
 com\nikolai\Move.class
 com\nikolai\Pokemon$StatSlot.class
-com\nikolai\TeamStorageService$1.class
 com\nikolai\Pokemon$Ability.class
 com\nikolai\Move$EffectEntry.class

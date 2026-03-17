@@ -1,9 +1,12 @@
 package com.nikolai;
 
 import java.util.List;
+
 // import java.util.Arrays;
 
 // import com.nikolai.Pokemon.TypeSlot;
+import javafx.scene.image.Image;
+
 
 
 
@@ -24,6 +27,11 @@ public class Pokemon {
     private List<AbilitySlot> abilities;
     private List<MoveSlot> moves;
 
+    // private SpriteFront spriteUrl;
+    // private SpriteFrontShiny spriteUrlShiny;
+
+    private Sprite sprites;
+
     public int getId() { return id; }
     public String getName() { return name; }
     public List<TypeSlot> getTypes() { return types; }
@@ -42,6 +50,12 @@ public class Pokemon {
 
     public List<AbilitySlot> getAbilities() { return abilities; }
     public List<MoveSlot> getMoves() { return moves; }
+
+    // public Sprite getSpriteUrl() { return spriteUrl}
+    // public Image getSpriteUrlShiny() { return spriteUrlShiny}
+
+    public Sprite getSprite() { return sprites;}
+    // public Image getSpriteShiny() { return sprite.getFrontShiny(); }
 
     public static class TypeSlot {
         private Type type;
@@ -85,5 +99,23 @@ public class Pokemon {
     //     private String name;
     //     public String getName() { return name; }
     // }
+
+    // public static class SpriteFront {
+    //     private String front_default;
+    //     public Image getFrontDefault() { return new Image(front_default); }
+    // }
+
+    // public static class SpriteFrontShiny {
+    //     private String front_shiny;
+    //     public Image getFrontShiny() { return new Image(front_shiny); }
+    // }
+
+    public static class Sprite {
+        private String front_default;
+        private String front_shiny;
+
+        public Image getFrontDefault() { return new Image(front_default); }
+        public Image getFrontShiny() { return new Image(front_shiny); }
+    }
     
 }

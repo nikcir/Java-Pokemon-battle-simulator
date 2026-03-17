@@ -6,6 +6,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import java.io.IOException;
 import java.util.stream.Collectors;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class PokemonController {
 
@@ -15,6 +17,8 @@ public class PokemonController {
     @FXML private Label statsLabel;
     @FXML private Label abilityLabel;
     @FXML private Label movesLabel;
+    @FXML private ImageView spriteImageView;
+    @FXML private ImageView spriteShinyImageView;
 
     private final PokeApiService pokeApiService = new PokeApiService();
 
@@ -61,6 +65,23 @@ public class PokemonController {
                     .map(m -> m.getMove().getName())
                     .collect(Collectors.joining(", "));
             movesLabel.setText("AVAILABLE MOVES: " + moves);
+
+            // Image image = new Image(pokemon.getSprite().getFrontDefault());
+            Image image = pokemon.getSprite().getFrontDefault();
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(200);
+            imageView.setPreserveRatio(true);
+            spriteImageView.setImage(image);
+
+            // Image shinyImage = new Image(pokemon.getSpriteUrlShiny().getFrontShiny());
+            Image shinyImage = pokemon.getSprite().getFrontShiny();
+            ImageView shinyImageView = new ImageView(shinyImage);
+            shinyImageView.setFitWidth(200);
+            shinyImageView.setPreserveRatio(true);
+            spriteShinyImageView.setImage(shinyImage);
+
+
+
         });
 
         task.setOnFailed(e -> {
