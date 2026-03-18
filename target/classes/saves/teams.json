@@ -92,5 +92,17 @@
         "thunderbolt"
       ]
     }
+  ],
+  "pikache": [
+    {
+      "name": "pikachu",
+      "heldItem": "life-orb",
+      "moves": [
+        "facade",
+        "mega-punch",
+        "mega-punch",
+        "electro-ball"
+      ]
+    }
   ]
 }

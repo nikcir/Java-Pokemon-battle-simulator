@@ -38,24 +38,11 @@ public class Pokemon {
 
     public List<StatSlot> getStats() { return stats; }
 
-    // public List<Integer> getStats() { return Arrays.asList(maxHp, hp, attack, defense, specialAttack, specialDefense, speed); }
-
-    // public int getMaxHp() { return maxHp; }
-    // public int getHp() { return hp; }
-    // public int getAttack() { return attack; }
-    // public int getDefense() { return defense; }
-    // public int getSpecialAttack() { return specialAttack; }
-    // public int getSpecialDefense() { return specialDefense; }
-    // public int getSpeed() { return speed; }
-
     public List<AbilitySlot> getAbilities() { return abilities; }
     public List<MoveSlot> getMoves() { return moves; }
 
-    // public Sprite getSpriteUrl() { return spriteUrl}
-    // public Image getSpriteUrlShiny() { return spriteUrlShiny}
 
     public Sprite getSprite() { return sprites;}
-    // public Image getSpriteShiny() { return sprite.getFrontShiny(); }
 
     public static class TypeSlot {
         private Type type;
@@ -95,20 +82,10 @@ public class Pokemon {
         public Move getMove() { return move; }
     }
 
-    // public static class Move {
-    //     private String name;
-    //     public String getName() { return name; }
-    // }
-
-    // public static class SpriteFront {
-    //     private String front_default;
-    //     public Image getFrontDefault() { return new Image(front_default); }
-    // }
-
-    // public static class SpriteFrontShiny {
-    //     private String front_shiny;
-    //     public Image getFrontShiny() { return new Image(front_shiny); }
-    // }
+    public static class Move {
+        private String name;
+        public String getName() { return name; }
+    }
 
     public static class Sprite {
         private String front_default;

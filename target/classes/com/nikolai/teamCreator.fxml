@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.TextField?>
@@ -13,21 +14,33 @@
     <Button text="Back" onAction="#goBack"/>
     <Label text="Team Editor"/>
 
-    <VBox spacing="10">
-        <TextField fx:id="pokemonField" promptText="Enter pokemon name or id"/>
-        <TextField fx:id="itemField" promptText="Enter held item"/>
-        <TextField fx:id="moveField1" promptText="Enter move name"/>
-        <TextField fx:id="moveField2" promptText="Enter move name"/>
-        <TextField fx:id="moveField3" promptText="Enter move name"/>
-        <TextField fx:id="moveField4" promptText="Enter move name"/>
-
-        <Button text="Add Pokemon" onAction="#onAddPokemon"/>
-        
-    </VBox>
-
     <Label fx:id="teamLabel" text="Team: "/>
 
     <TextField fx:id="teamNameField" promptText="Enter team name"/>
+
+    <HBox spacing="10">
+        <TextField fx:id="pokemonField" promptText="Enter pokemon name or id"/>
+        <VBox spacing="5">
+            <Label text="Held Item"/>
+            <TextField fx:id="itemField" promptText="Enter held item"/>
+
+            <Label text="Ability"/>
+            <ComboBox fx:id="abilityDropdown" promptText="Select ability"/>
+
+            <Label text="Nature"/>
+            <ComboBox fx:id="natureDropdown" promptText="Select nature"/>
+        </VBox>
+        <VBox spacing="5">
+            <Label text="Moves"/>
+            <ComboBox fx:id="moveDropdown1" promptText="Select move"/>
+            <ComboBox fx:id="moveDropdown2" promptText="Select move"/>
+            <ComboBox fx:id="moveDropdown3" promptText="Select move"/>
+            <ComboBox fx:id="moveDropdown4" promptText="Select move"/>
+        </VBox>
+
+        <Button text="Load Pokemon" onAction="#onLoadPokemon"/>
+        <Button text="Add Pokemon" onAction="#onAddPokemon"/>
+    </HBox>
 
     <Button text="Save Team" onAction="#onSaveTeam"/>
 
