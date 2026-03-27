@@ -8,6 +8,7 @@ public class BattlePokemon extends PokemonVariant {
     private int maxHp;
     private StatusCondition statusCondition;
     private boolean isFainted;
+    private List<Integer> statChanges;
 
     public class StatusCondition {
         private String name;
@@ -58,5 +59,9 @@ public class BattlePokemon extends PokemonVariant {
 
     public double getPercentHp() {
         return (double) currentHp / maxHp;
+    }
+
+    public void applyStatChange(List<Integer> newStatChanges) {
+        
     }
 }
