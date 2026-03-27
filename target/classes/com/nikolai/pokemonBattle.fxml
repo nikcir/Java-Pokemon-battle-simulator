@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<!--
+    PokemonBattle.fxml
+    Pokemon Showdown-style battle layout for JavaFX
+    ================================================
+    Controller: PokemonBattleController
+    Recommended scene size: 900 x 600
+
+    CSS classes to style (create battle.css and link it):
+      .battle-root         – main dark background
+      .battle-field        – arena area
+      .hud-box             – semi-transparent info panels
+      .hp-bar-green/.hp-bar-yellow/.hp-bar-red
+      .move-btn            – move buttons
+      .move-btn-electric/.move-btn-normal/.move-btn-dark etc.
+      .party-icon          – small party pokeball/icon buttons
+      .action-log          – scrolling battle text area
+      .turn-label          – "Turn X" badge
+      .name-label          – pokemon name text
+      .level-label         – Lv. text
+      .status-label        – status condition badge (PSN, SLP, etc.)
+-->
+
+<BorderPane fx:id="rootPane"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.nikolai.BattleController"
+            styleClass="battle-root"
+            stylesheets="@battle.css"
+            prefWidth="900" prefHeight="600">
+
+    <!-- ═══════════════════════════════════════════
+         TOP BAR  –  opponent info + turn counter
+         ═══════════════════════════════════════════ -->
+    <top>
+        <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="0">
+
+            <!-- Turn Badge -->
+            <Label fx:id="turnLabel" text="Turn 1" styleClass="turn-label">
+                <HBox.margin><Insets top="6" right="10" bottom="6" left="10"/></HBox.margin>
+            </Label>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Opponent Pokemon 1 HUD -->
+            <VBox styleClass="hud-box" alignment="CENTER_LEFT" spacing="2" minWidth="180">
+                <padding><Insets top="6" right="10" bottom="6" left="10"/></padding>
+
+                <HBox alignment="CENTER_LEFT" spacing="4">
+                    <!-- Gender icon can be an ImageView or a Label -->
+                    <Label fx:id="oppPoke1NameLabel" text="Inteleon" styleClass="name-label"/>
+                    <Label text="♂" styleClass="gender-label-male"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="oppPoke1LevelLabel" text="L78" styleClass="level-label"/>
+                </HBox>
+
+                <!-- Status badge (hidden by default) -->
+                <Label fx:id="oppPoke1StatusLabel" text="" styleClass="status-label" visible="false" managed="false"/>
+
+                <!-- HP Bar row -->
+                <HBox alignment="CENTER_LEFT" spacing="4">
+                    <Label text="HP:" styleClass="hp-text-label"/>
+                    <StackPane HBox.hgrow="ALWAYS" minWidth="120" maxHeight="8">
+                        <!-- Background track -->
+                        <Rectangle fx:id="oppPoke1HpTrack" height="8" width="120"
+                                   styleClass="hp-track" arcWidth="4" arcHeight="4"/>
+                        <!-- Coloured fill – width bound in controller -->
+                        <Rectangle fx:id="oppPoke1HpFill" height="8" width="120"
+                                   styleClass="hp-bar-green" arcWidth="4" arcHeight="4"
+                                   StackPane.alignment="CENTER_LEFT"/>
+                    </StackPane>
+                </HBox>
+
+                <!-- Numeric HP (shown/hidden via controller) -->
+                <Label fx:id="oppPoke1HpNumLabel" text="100/100" styleClass="hp-num-label"/>
+            </VBox>
+
+            <!-- Opponent party icons (6 slots with sprite graphics) -->
+            <HBox fx:id="oppPartyBox" styleClass="party-box" alignment="CENTER" spacing="6">
+                <padding><Insets top="0" right="8" bottom="0" left="8"/></padding>
+                <Button fx:id="oppSlot1" styleClass="party-icon party-icon-alive" onAction="#onOppSlot1">
+                    <graphic>
+                        <ImageView fx:id="oppSlot1Icon" fitWidth="24" fitHeight="24" preserveRatio="true"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="oppSlot2" styleClass="party-icon party-icon-alive" onAction="#onOppSlot2">
+                    <graphic>
+                        <ImageView fx:id="oppSlot2Icon" fitWidth="24" fitHeight="24" preserveRatio="true"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="oppSlot3" styleClass="party-icon party-icon-alive" onAction="#onOppSlot3">
+                    <graphic>
+                        <ImageView fx:id="oppSlot3Icon" fitWidth="24" fitHeight="24" preserveRatio="true"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="oppSlot4" styleClass="party-icon party-icon-alive" onAction="#onOppSlot4">
+                    <graphic>
+                        <ImageView fx:id="oppSlot4Icon" fitWidth="24" fitHeight="24" preserveRatio="true"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="oppSlot5" styleClass="party-icon party-icon-alive" onAction="#onOppSlot5">
+                    <graphic>
+                        <ImageView fx:id="oppSlot5Icon" fitWidth="24" fitHeight="24" preserveRatio="true"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="oppSlot6" styleClass="party-icon party-icon-fainted" onAction="#onOppSlot6">
+                    <graphic>
+                        <ImageView fx:id="oppSlot6Icon" fitWidth="24" fitHeight="24" preserveRatio="true"/>
+                    </graphic>
+                </Button>
+            </HBox>
+
+        </HBox>
+    </top>
+
+    <!-- ═══════════════════════════════════════════
+         CENTER  –  battle field + side log
+         ═══════════════════════════════════════════ -->
+    <center>
+        <HBox>
+
+            <!-- ── Battle Field ─────────────────────────────── -->
+            <StackPane fx:id="battleField" styleClass="battle-field" HBox.hgrow="ALWAYS">
+
+                <!-- Background image (set in controller or CSS) -->
+                <ImageView fx:id="backgroundImageView" preserveRatio="true"
+                           fitWidth="680" fitHeight="380" opacity="1.0"
+                           StackPane.alignment="CENTER"/>
+
+                <!-- Weather / terrain overlay -->
+                <Pane fx:id="weatherOverlay" styleClass="weather-overlay"
+                      mouseTransparent="true"/>
+
+                <!-- ── Opponent sprites (back-right area) ────── -->
+                <!-- Pokemon 1 opponent -->
+                <VBox StackPane.alignment="TOP_RIGHT" spacing="2">
+                    <StackPane.margin><Insets top="20" right="30"/></StackPane.margin>
+                    <!-- Volatile status indicators (e.g. Slow Start) -->
+                    <Label fx:id="oppPoke1VolatileLabel" text="Slow Start"
+                           styleClass="volatile-label" visible="false" managed="false"/>
+                    <ImageView fx:id="oppPoke1Sprite"
+                               fitWidth="130" fitHeight="130" preserveRatio="true"
+                               styleClass="pokemon-sprite"/>
+                </VBox>
+
+                <!-- ── Player sprites (front-left area) ──────── -->
+                <!-- Trainer sprite -->
+                <ImageView fx:id="playerTrainerSprite"
+                           fitWidth="90" fitHeight="140" preserveRatio="true"
+                           StackPane.alignment="BOTTOM_LEFT"
+                           styleClass="trainer-sprite">
+                    <StackPane.margin><Insets bottom="50" left="30"/></StackPane.margin>
+                </ImageView>
+
+                <!-- Player Pokemon 1 -->
+                <VBox StackPane.alignment="BOTTOM_LEFT" spacing="2">
+                    <StackPane.margin><Insets bottom="60" left="120"/></StackPane.margin>
+
+                    <!-- In-field name HUD for player pokemon -->
+                    <HBox styleClass="player-hud-inline" alignment="CENTER_LEFT" spacing="4">
+                        <Label fx:id="plyrPoke1NameLabel" text="Regigigas" styleClass="name-label-player"/>
+                        <Label fx:id="plyrPoke1LevelLabel" text="L86" styleClass="level-label"/>
+                        <Label fx:id="plyrPoke1StatusLabel" text="" styleClass="status-label" visible="false" managed="false"/>
+                    </HBox>
+
+                    <!-- HP bar for player poke 1 -->
+                    <HBox alignment="CENTER_LEFT" spacing="4">
+                        <Label text="HP:" styleClass="hp-text-label"/>
+                        <StackPane minWidth="140" maxHeight="8">
+                            <Rectangle fx:id="plyrPoke1HpTrack" height="8" width="140"
+                                       styleClass="hp-track" arcWidth="4" arcHeight="4"/>
+                            <Rectangle fx:id="plyrPoke1HpFill" height="8" width="140"
+                                       styleClass="hp-bar-green" arcWidth="4" arcHeight="4"
+                                       StackPane.alignment="CENTER_LEFT"/>
+                        </StackPane>
+                    </HBox>
+                    <Label fx:id="plyrPoke1HpNumLabel" text="329/329" styleClass="hp-num-label-player"/>
+
+                    <ImageView fx:id="plyrPoke1Sprite"
+                               fitWidth="160" fitHeight="160" preserveRatio="true"
+                               styleClass="pokemon-sprite-player"/>
+                </VBox>
+
+            </StackPane>
+
+            <!-- ── Battle Log (right side) ──────────────────── -->
+            <VBox styleClass="log-panel" minWidth="200" maxWidth="220" spacing="0">
+                <Label text="Battle Log" styleClass="log-header"/>
+                <ScrollPane fx:id="logScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true"
+                            styleClass="log-scroll" hbarPolicy="NEVER">
+                    <TextArea fx:id="battleLogArea" styleClass="action-log"
+                              editable="false" wrapText="true"
+                              prefHeight="10000"/>
+                </ScrollPane>
+            </VBox>
+
+        </HBox>
+    </center>
+
+    <!-- ═══════════════════════════════════════════
+         BOTTOM  –  action panel
+         ═══════════════════════════════════════════ -->
+    <bottom>
+        <VBox styleClass="bottom-panel" spacing="0">
+
+            <!-- Context label: "What will X do?" or switch prompt etc. -->
+            <HBox alignment="CENTER_LEFT" styleClass="prompt-bar" spacing="6">
+                <padding><Insets top="2" right="10" bottom="2" left="10"/></padding>
+                <Label fx:id="promptPokemonNameLabel" text="Regigigas" styleClass="prompt-name-label"/>
+                <Label fx:id="promptLabel" text="'s turn!" styleClass="prompt-label"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="plyrPoke1HpStatusBar" text="HP 329/329" styleClass="prompt-hp-label"/>
+            </HBox>
+
+            <!-- Active tab selection: Attack / Switch / Item / Run -->
+            <HBox fx:id="actionTabBar" styleClass="action-tab-bar" spacing="2">
+                <padding><Insets top="2" right="10" bottom="0" left="10"/></padding>
+                <ToggleButton fx:id="tabAttack"   text="Attack"   styleClass="action-tab, action-tab-selected" selected="true"
+                              onAction="#onTabAttack"   toggleGroup="$actionTabGroup"/>
+                <ToggleButton fx:id="tabSwitch"   text="Switch"   styleClass="action-tab" onAction="#onTabSwitch"   toggleGroup="$actionTabGroup"/>
+                <ToggleButton fx:id="tabItem"     text="Item"     styleClass="action-tab" onAction="#onTabItem"     toggleGroup="$actionTabGroup"/>
+                <ToggleButton fx:id="tabForfeit"  text="Forfeit"  styleClass="action-tab" onAction="#onTabForfeit"  toggleGroup="$actionTabGroup"/>
+            </HBox>
+
+            <!-- ── Attack panel ────────────────────────────── -->
+            <StackPane fx:id="actionPanelStack">
+
+                <VBox fx:id="attackPanel" styleClass="attack-panel" spacing="4">
+                    <padding><Insets top="6" right="10" bottom="6" left="10"/></padding>
+
+                    <!-- 4 move buttons (2 × 2 grid) -->
+                    <GridPane hgap="6" vgap="6">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="25"/>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="25"/>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="25"/>
+                            <ColumnConstraints hgrow="ALWAYS" percentWidth="25"/>
+                        </columnConstraints>
+
+                        <!-- Move 1 -->
+                        <VBox styleClass="move-btn-wrapper, move-btn-electric"
+                              onMouseClicked="#onMove1Clicked"
+                              GridPane.columnIndex="0" GridPane.rowIndex="0"
+                              alignment="CENTER" spacing="2">
+                            <Label fx:id="move1Name" text="Thunder Wave" styleClass="move-name"/>
+                            <HBox alignment="CENTER" spacing="8">
+                                <Label fx:id="move1Type" text="Electric" styleClass="type-badge, type-electric"/>
+                                <Label fx:id="move1PP"   text="32/32"   styleClass="pp-label"/>
+                            </HBox>
+                        </VBox>
+
+                        <!-- Move 2 -->
+                        <VBox styleClass="move-btn-wrapper, move-btn-normal"
+                              onMouseClicked="#onMove2Clicked"
+                              GridPane.columnIndex="1" GridPane.rowIndex="0"
+                              alignment="CENTER" spacing="2">
+                            <Label fx:id="move2Name" text="Protect" styleClass="move-name"/>
+                            <HBox alignment="CENTER" spacing="8">
+                                <Label fx:id="move2Type" text="Normal" styleClass="type-badge, type-normal"/>
+                                <Label fx:id="move2PP"   text="16/16"  styleClass="pp-label"/>
+                            </HBox>
+                        </VBox>
+
+                        <!-- Move 3 -->
+                        <VBox styleClass="move-btn-wrapper, move-btn-dark"
+                              onMouseClicked="#onMove3Clicked"
+                              GridPane.columnIndex="2" GridPane.rowIndex="0"
+                              alignment="CENTER" spacing="2">
+                            <Label fx:id="move3Name" text="Knock Off" styleClass="move-name"/>
+                            <HBox alignment="CENTER" spacing="8">
+                                <Label fx:id="move3Type" text="Dark" styleClass="type-badge, type-dark"/>
+                                <Label fx:id="move3PP"   text="32/32"  styleClass="pp-label"/>
+                            </HBox>
+                        </VBox>
+
+                        <!-- Move 4 -->
+                        <VBox styleClass="move-btn-wrapper, move-btn-normal"
+                              onMouseClicked="#onMove4Clicked"
+                              GridPane.columnIndex="3" GridPane.rowIndex="0"
+                              alignment="CENTER" spacing="2">
+                            <Label fx:id="move4Name" text="Double-Edge" styleClass="move-name"/>
+                            <HBox alignment="CENTER" spacing="8">
+                                <Label fx:id="move4Type" text="Normal" styleClass="type-badge, type-normal"/>
+                                <Label fx:id="move4PP"   text="24/24"  styleClass="pp-label"/>
+                            </HBox>
+                        </VBox>
+
+                    </GridPane>
+
+                </VBox>
+
+                <!-- ── Switch panel (hidden by default) ──────── -->
+                <VBox fx:id="switchPanel" styleClass="switch-panel" spacing="6" visible="false" managed="false">
+                    <padding><Insets top="6" right="10" bottom="6" left="10"/></padding>
+                    <Label text="Choose a Pokémon to switch in:" styleClass="panel-header-label"/>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <!-- Six switch slots; controller populates name/hp -->
+                        <Button fx:id="switchSlot1" styleClass="switch-slot" onAction="#onSwitchSlot1" mnemonicParsing="false" text="">
+                            <VBox alignment="CENTER" spacing="2">
+                                <ImageView fx:id="switchSlot1Icon" fitWidth="48" fitHeight="48" preserveRatio="true"/>
+                                <Label fx:id="switchSlot1Name" text="Regigigas" styleClass="switch-name"/>
+                                <Label fx:id="switchSlot1HP"   text="329/329"   styleClass="switch-hp"/>
+                            </VBox>
+                        </Button>
+                        <Button fx:id="switchSlot2" styleClass="switch-slot" onAction="#onSwitchSlot2" mnemonicParsing="false" text="">
+                            <VBox alignment="CENTER" spacing="2">
+                                <ImageView fx:id="switchSlot2Icon" fitWidth="48" fitHeight="48" preserveRatio="true"/>
+                                <Label fx:id="switchSlot2Name" text="Dugtrio"   styleClass="switch-name"/>
+                                <Label fx:id="switchSlot2HP"   text="210/250"   styleClass="switch-hp"/>
+                            </VBox>
+                        </Button>
+                        <Button fx:id="switchSlot3" styleClass="switch-slot" onAction="#onSwitchSlot3" mnemonicParsing="false" text="">
+                            <VBox alignment="CENTER" spacing="2">
+                                <ImageView fx:id="switchSlot3Icon" fitWidth="48" fitHeight="48" preserveRatio="true"/>
+                                <Label fx:id="switchSlot3Name" text="Mamoswine" styleClass="switch-name"/>
+                                <Label fx:id="switchSlot3HP"   text="280/300"   styleClass="switch-hp"/>
+                            </VBox>
+                        </Button>
+                        <Button fx:id="switchSlot4" styleClass="switch-slot" onAction="#onSwitchSlot4" mnemonicParsing="false" text="">
+                            <VBox alignment="CENTER" spacing="2">
+                                <ImageView fx:id="switchSlot4Icon" fitWidth="48" fitHeight="48" preserveRatio="true"/>
+                                <Label fx:id="switchSlot4Name" text="Bellossom"  styleClass="switch-name"/>
+                                <Label fx:id="switchSlot4HP"   text="180/200"   styleClass="switch-hp"/>
+                            </VBox>
+                        </Button>
+                        <Button fx:id="switchSlot5" styleClass="switch-slot" onAction="#onSwitchSlot5" mnemonicParsing="false" text="">
+                            <VBox alignment="CENTER" spacing="2">
+                                <ImageView fx:id="switchSlot5Icon" fitWidth="48" fitHeight="48" preserveRatio="true"/>
+                                <Label fx:id="switchSlot5Name" text="Glalie"    styleClass="switch-name"/>
+                                <Label fx:id="switchSlot5HP"   text="0/220"     styleClass="switch-hp switch-fainted"/>
+                            </VBox>
+                        </Button>
+                        <Button fx:id="switchSlot6" styleClass="switch-slot" onAction="#onSwitchSlot6" mnemonicParsing="false" text="">
+                            <VBox alignment="CENTER" spacing="2">
+                                <ImageView fx:id="switchSlot6Icon" fitWidth="48" fitHeight="48" preserveRatio="true"/>
+                                <Label fx:id="switchSlot6Name" text="Diancie"   styleClass="switch-name"/>
+                                <Label fx:id="switchSlot6HP"   text="190/190"   styleClass="switch-hp"/>
+                            </VBox>
+                        </Button>
+                    </HBox>
+                </VBox>
+
+                <!-- ── Item panel (hidden by default) ─────────── -->
+                <VBox fx:id="itemPanel" styleClass="item-panel" spacing="6" visible="false" managed="false">
+                    <padding><Insets top="6" right="10" bottom="6" left="10"/></padding>
+                    <Label text="Choose an item:" styleClass="panel-header-label"/>
+                    <ListView fx:id="itemListView" styleClass="item-list" prefHeight="80"/>
+                </VBox>
+
+            </StackPane>
+
+            <!-- ── Player party icons (bottom row) ────────────── -->
+            <HBox fx:id="playerPartyBar" styleClass="player-party-bar" alignment="CENTER_LEFT" spacing="8">
+                <padding><Insets top="4" right="10" bottom="6" left="10"/></padding>
+                <Label text="Party:" styleClass="party-bar-label"/>
+                <Button fx:id="playerSlot1" styleClass="party-icon party-icon-alive" onAction="#onPartySlot1">
+                    <graphic>
+                        <ImageView fx:id="playerSlot1Icon" fitWidth="24" fitHeight="24" preserveRatio="true"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="playerSlot2" styleClass="party-icon party-icon-alive" onAction="#onPartySlot2">
+                    <graphic>
+                        <ImageView fx:id="playerSlot2Icon" fitWidth="24" fitHeight="24" preserveRatio="true"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="playerSlot3" styleClass="party-icon party-icon-alive" onAction="#onPartySlot3">
+                    <graphic>
+                        <ImageView fx:id="playerSlot3Icon" fitWidth="24" fitHeight="24" preserveRatio="true"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="playerSlot4" styleClass="party-icon party-icon-alive" onAction="#onPartySlot4">
+                    <graphic>
+                        <ImageView fx:id="playerSlot4Icon" fitWidth="24" fitHeight="24" preserveRatio="true"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="playerSlot5" styleClass="party-icon party-icon-fainted" onAction="#onPartySlot5">
+                    <graphic>
+                        <ImageView fx:id="playerSlot5Icon" fitWidth="24" fitHeight="24" preserveRatio="true"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="playerSlot6" styleClass="party-icon party-icon-alive" onAction="#onPartySlot6">
+                    <graphic>
+                        <ImageView fx:id="playerSlot6Icon" fitWidth="24" fitHeight="24" preserveRatio="true"/>
+                    </graphic>
+                </Button>
+            </HBox>
+
+        </VBox>
+    </bottom>
+
+</BorderPane>

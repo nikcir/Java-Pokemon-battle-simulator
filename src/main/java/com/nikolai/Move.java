@@ -36,16 +36,5 @@ public class Move {
     public String getEffectEntry() {
         return effectEntry;
     }
-
-    public static class Type {
-        private String name;
-        public String getName() { return name; }
-    }
-
-    public static class EffectEntry {
-        private String effect;
-        public String getEffect() { return effect; }
-    }
-    
-
 }
+    

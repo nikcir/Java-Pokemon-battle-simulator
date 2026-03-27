@@ -1,6 +1,6 @@
 package com.nikolai;
 
-public class Ability {
+public class Type {
     private String name;
     public String getName() { return name; }
 }

@@ -1,108 +1,26 @@
 {
-  "sigma2": [
+  "test1": [
     {
-      "name": "PIKA",
-      "heldItem": "orb",
+      "name": "rayquaza",
+      "heldItem": "life-orb",
       "moves": [
-        "2",
-        "3",
-        "4",
-        "5"
-      ]
+        "fly",
+        "bind",
+        "take-down",
+        "flamethrower"
+      ],
+      "nature": "lonely"
     },
-    {
-      "name": "PIKA",
-      "heldItem": "orb",
-      "moves": [
-        "2",
-        "3",
-        "4",
-        "5"
-      ]
-    },
-    {
-      "name": "PIKA",
-      "heldItem": "orb",
-      "moves": [
-        "2",
-        "3",
-        "4",
-        "5"
-      ]
-    }
-  ],
-  "sigma3": [
-    {
-      "name": "PIKA",
-      "heldItem": "orb",
-      "moves": [
-        "2",
-        "3",
-        "4",
-        "5"
-      ]
-    },
-    {
-      "name": "PIKA",
-      "heldItem": "orb",
-      "moves": [
-        "2",
-        "3",
-        "4",
-        "5"
-      ]
-    },
-    {
-      "name": "PIKA",
-      "heldItem": "orb",
-      "moves": [
-        "2",
-        "3",
-        "4",
-        "5"
-      ]
-    },
-    {
-      "name": "pikachu",
-      "heldItem": "light-ball",
-      "moves": [
-        "surf",
-        "grass-knot",
-        "fake-out",
-        "thunderbolt"
-      ]
-    },
-    {
-      "name": "raichu",
-      "heldItem": "light-ball",
-      "moves": [
-        "surf",
-        "grass-knot",
-        "fake-out",
-        "thunderbolt"
-      ]
-    },
-    {
-      "name": "rayqauza",
-      "heldItem": "light-ball",
-      "moves": [
-        "surf",
-        "grass-knot",
-        "fake-out",
-        "thunderbolt"
-      ]
-    }
-  ],
-  "pikache": [
     {
       "name": "pikachu",
       "heldItem": "life-orb",
       "moves": [
-        "facade",
         "mega-punch",
-        "mega-punch",
-        "electro-ball"
-      ]
+        "pay-day",
+        "take-down",
+        "mega-kick"
+      ],
+      "nature": "brave"
     }
   ]
 }

@@ -33,7 +33,7 @@ public class TeamLoaderController {
 
         teamLabel.setText("Loaded Team: " + name + "\n" +
                 loadedTeam.stream()
-                        .map(p -> p.getName() + " @ " + p.getHeldItem() + " with moves: " + String.join(", ", p.getMoves()))
+                        .map(p -> p.getNature() + " " + p.getName() + " @ " + p.getHeldItem() + " with moves: " + String.join(", ", p.getMoves()))
                         .reduce((a, b) -> a + "\n" + b)
                         .orElse("No Pokemon in team"));
     }
