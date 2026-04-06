@@ -1,30 +1,48 @@
 import os  
 import subprocess
-# from https://www.geeksforgeeks.org/git/how-to-count-number-of-lines-in-a-git-repository/
+from collections import defaultdict
 
 def count_lines_of_code():
   """
-  This function counts the total number of lines of code in a Git repository.
-
-  It retrieves a list of all tracked files using `git ls-files` and then iterates
-  over each file, counting all lines within it.
-
-  **Note:** This method counts all lines, including comments and blank lines.
+  Counts total lines and breaks down by file type (.java, .fxml, .css, etc.)
+  Excludes compiled artifacts and build outputs.
   """
 
-  # Get list of files tracked by the Git repository
+  # Extensions to count (source code only)
+  SOURCE_EXTENSIONS = {'.java', '.fxml', '.css', '.xml', '.json', '.properties', '.md'}
+
   result = subprocess.run(['git', 'ls-files'], capture_output=True, text=True)
   files = result.stdout.splitlines()
 
   total_lines = 0
-  for file in files:
-    # Open the file in read mode, ignoring any encoding errors
-    with open(file, 'r', errors='ignore') as f:
-      # Concise way to count lines using a generator expression
-      total_lines += sum(1 for _ in f)
+  lines_by_type = defaultdict(int)
 
-  # Print the total number of lines found
-  print(f"Total lines of code: {total_lines}")
+  for file in files:
+    _, ext = os.path.splitext(file)
+    
+    # Only count specified source file types
+    if ext not in SOURCE_EXTENSIONS:
+      continue
+    
+    try:
+      with open(file, 'r', errors='ignore') as f:
+        line_count = sum(1 for _ in f)
+        total_lines += line_count
+        lines_by_type[ext] += line_count
+    except Exception as e:
+      print(f"Error reading {file}: {e}")
+
+  # Print results
+  print("=" * 50)
+  print("Lines of Code by File Type (Source Only)")
+  print("=" * 50)
+  
+  for ext in sorted(lines_by_type.keys()):
+    print(f"{ext:15} {lines_by_type[ext]:10,} lines")
+  
+  print("=" * 50)
+  print(f"{'TOTAL':15} {total_lines:10,} lines")
+  print("=" * 50)
 
 if __name__ == "__main__":
   count_lines_of_code()
