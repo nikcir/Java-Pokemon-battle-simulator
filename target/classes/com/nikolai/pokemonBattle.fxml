@@ -31,10 +31,14 @@
 
 <BorderPane fx:id="rootPane"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.nikolai.BattleController"
+            fx:controller="com.nikolai.ui.controllers.BattleController"
             styleClass="battle-root"
             stylesheets="@battle.css"
             prefWidth="900" prefHeight="600">
+
+    <fx:define>
+        <ToggleGroup fx:id="actionTabGroup"/>
+    </fx:define>
 
     <!-- ═══════════════════════════════════════════
          TOP BAR  –  opponent info + turn counter
@@ -55,7 +59,7 @@
 
                 <HBox alignment="CENTER_LEFT" spacing="4">
                     <!-- Gender icon can be an ImageView or a Label -->
-                    <Label fx:id="oppPoke1NameLabel" text="Inteleon" styleClass="name-label"/>
+                    <Label fx:id="oppPoke1NameLabel" text="No Pokemon" styleClass="name-label"/>
                     <Label text="♂" styleClass="gender-label-male"/>
                     <Region HBox.hgrow="ALWAYS"/>
                     <Label fx:id="oppPoke1LevelLabel" text="L78" styleClass="level-label"/>
@@ -140,7 +144,7 @@
 
                 <!-- ── Opponent sprites (back-right area) ────── -->
                 <!-- Pokemon 1 opponent -->
-                <VBox StackPane.alignment="TOP_RIGHT" spacing="2">
+                <VBox StackPane.alignment="TOP_RIGHT" maxWidth="-Infinity" maxHeight="-Infinity" spacing="2">
                     <StackPane.margin><Insets top="20" right="30"/></StackPane.margin>
                     <!-- Volatile status indicators (e.g. Slow Start) -->
                     <Label fx:id="oppPoke1VolatileLabel" text="Slow Start"
@@ -160,14 +164,15 @@
                 </ImageView>
 
                 <!-- Player Pokemon 1 -->
-                <VBox StackPane.alignment="BOTTOM_LEFT" spacing="2">
+                <VBox StackPane.alignment="BOTTOM_LEFT" maxWidth="-Infinity" maxHeight="-Infinity" spacing="2">
                     <StackPane.margin><Insets bottom="60" left="120"/></StackPane.margin>
 
                     <!-- In-field name HUD for player pokemon -->
                     <HBox styleClass="player-hud-inline" alignment="CENTER_LEFT" spacing="4">
-                        <Label fx:id="plyrPoke1NameLabel" text="Regigigas" styleClass="name-label-player"/>
-                        <Label fx:id="plyrPoke1LevelLabel" text="L86" styleClass="level-label"/>
+                        <Label fx:id="plyrPoke1NameLabel" text="No Pokemon" styleClass="name-label-player"/>
+                        <Label fx:id="plyrPoke1LevelLabel" text="?" styleClass="level-label"/>
                         <Label fx:id="plyrPoke1StatusLabel" text="" styleClass="status-label" visible="false" managed="false"/>
+                        <Label fx:id="plyrPoke1VolatileLabel" text="" styleClass="volatile-label" visible="false" managed="false"/>
                     </HBox>
 
                     <!-- HP bar for player poke 1 -->
@@ -213,7 +218,7 @@
             <!-- Context label: "What will X do?" or switch prompt etc. -->
             <HBox alignment="CENTER_LEFT" styleClass="prompt-bar" spacing="6">
                 <padding><Insets top="2" right="10" bottom="2" left="10"/></padding>
-                <Label fx:id="promptPokemonNameLabel" text="Regigigas" styleClass="prompt-name-label"/>
+                <Label fx:id="promptPokemonNameLabel" text="No Pokemon" styleClass="prompt-name-label"/>
                 <Label fx:id="promptLabel" text="'s turn!" styleClass="prompt-label"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Label fx:id="plyrPoke1HpStatusBar" text="HP 329/329" styleClass="prompt-hp-label"/>
@@ -247,6 +252,7 @@
                         <!-- Move 1 -->
                         <VBox styleClass="move-btn-wrapper, move-btn-electric"
                               onMouseClicked="#onMove1Clicked"
+                              fx:id="move1Btn"
                               GridPane.columnIndex="0" GridPane.rowIndex="0"
                               alignment="CENTER" spacing="2">
                             <Label fx:id="move1Name" text="Thunder Wave" styleClass="move-name"/>
@@ -259,6 +265,7 @@
                         <!-- Move 2 -->
                         <VBox styleClass="move-btn-wrapper, move-btn-normal"
                               onMouseClicked="#onMove2Clicked"
+                              fx:id="move2Btn"
                               GridPane.columnIndex="1" GridPane.rowIndex="0"
                               alignment="CENTER" spacing="2">
                             <Label fx:id="move2Name" text="Protect" styleClass="move-name"/>
@@ -271,6 +278,7 @@
                         <!-- Move 3 -->
                         <VBox styleClass="move-btn-wrapper, move-btn-dark"
                               onMouseClicked="#onMove3Clicked"
+                              fx:id="move3Btn"
                               GridPane.columnIndex="2" GridPane.rowIndex="0"
                               alignment="CENTER" spacing="2">
                             <Label fx:id="move3Name" text="Knock Off" styleClass="move-name"/>
@@ -283,6 +291,7 @@
                         <!-- Move 4 -->
                         <VBox styleClass="move-btn-wrapper, move-btn-normal"
                               onMouseClicked="#onMove4Clicked"
+                              fx:id="move4Btn"
                               GridPane.columnIndex="3" GridPane.rowIndex="0"
                               alignment="CENTER" spacing="2">
                             <Label fx:id="move4Name" text="Double-Edge" styleClass="move-name"/>
@@ -302,47 +311,59 @@
                     <Label text="Choose a Pokémon to switch in:" styleClass="panel-header-label"/>
                     <HBox spacing="8" alignment="CENTER_LEFT">
                         <!-- Six switch slots; controller populates name/hp -->
-                        <Button fx:id="switchSlot1" styleClass="switch-slot" onAction="#onSwitchSlot1" mnemonicParsing="false" text="">
+                        <Button fx:id="switchSlot1" styleClass="switch-slot" onAction="#onSwitchSlot1" mnemonicParsing="false">
+                            <graphic>
                             <VBox alignment="CENTER" spacing="2">
                                 <ImageView fx:id="switchSlot1Icon" fitWidth="48" fitHeight="48" preserveRatio="true"/>
                                 <Label fx:id="switchSlot1Name" text="Regigigas" styleClass="switch-name"/>
                                 <Label fx:id="switchSlot1HP"   text="329/329"   styleClass="switch-hp"/>
                             </VBox>
+                        </graphic>
                         </Button>
-                        <Button fx:id="switchSlot2" styleClass="switch-slot" onAction="#onSwitchSlot2" mnemonicParsing="false" text="">
+                        <Button fx:id="switchSlot2" styleClass="switch-slot" onAction="#onSwitchSlot2" mnemonicParsing="false">
+                            <graphic>
                             <VBox alignment="CENTER" spacing="2">
                                 <ImageView fx:id="switchSlot2Icon" fitWidth="48" fitHeight="48" preserveRatio="true"/>
                                 <Label fx:id="switchSlot2Name" text="Dugtrio"   styleClass="switch-name"/>
                                 <Label fx:id="switchSlot2HP"   text="210/250"   styleClass="switch-hp"/>
                             </VBox>
+                        </graphic>
                         </Button>
-                        <Button fx:id="switchSlot3" styleClass="switch-slot" onAction="#onSwitchSlot3" mnemonicParsing="false" text="">
+                        <Button fx:id="switchSlot3" styleClass="switch-slot" onAction="#onSwitchSlot3" mnemonicParsing="false">
+                            <graphic>
                             <VBox alignment="CENTER" spacing="2">
                                 <ImageView fx:id="switchSlot3Icon" fitWidth="48" fitHeight="48" preserveRatio="true"/>
                                 <Label fx:id="switchSlot3Name" text="Mamoswine" styleClass="switch-name"/>
                                 <Label fx:id="switchSlot3HP"   text="280/300"   styleClass="switch-hp"/>
                             </VBox>
+                        </graphic>
                         </Button>
-                        <Button fx:id="switchSlot4" styleClass="switch-slot" onAction="#onSwitchSlot4" mnemonicParsing="false" text="">
+                        <Button fx:id="switchSlot4" styleClass="switch-slot" onAction="#onSwitchSlot4" mnemonicParsing="false">
+                            <graphic>
                             <VBox alignment="CENTER" spacing="2">
                                 <ImageView fx:id="switchSlot4Icon" fitWidth="48" fitHeight="48" preserveRatio="true"/>
                                 <Label fx:id="switchSlot4Name" text="Bellossom"  styleClass="switch-name"/>
                                 <Label fx:id="switchSlot4HP"   text="180/200"   styleClass="switch-hp"/>
                             </VBox>
+                        </graphic>
                         </Button>
-                        <Button fx:id="switchSlot5" styleClass="switch-slot" onAction="#onSwitchSlot5" mnemonicParsing="false" text="">
+                        <Button fx:id="switchSlot5" styleClass="switch-slot" onAction="#onSwitchSlot5" mnemonicParsing="false">
+                            <graphic>
                             <VBox alignment="CENTER" spacing="2">
                                 <ImageView fx:id="switchSlot5Icon" fitWidth="48" fitHeight="48" preserveRatio="true"/>
                                 <Label fx:id="switchSlot5Name" text="Glalie"    styleClass="switch-name"/>
                                 <Label fx:id="switchSlot5HP"   text="0/220"     styleClass="switch-hp switch-fainted"/>
                             </VBox>
+                        </graphic>
                         </Button>
-                        <Button fx:id="switchSlot6" styleClass="switch-slot" onAction="#onSwitchSlot6" mnemonicParsing="false" text="">
-                            <VBox alignment="CENTER" spacing="2">
-                                <ImageView fx:id="switchSlot6Icon" fitWidth="48" fitHeight="48" preserveRatio="true"/>
-                                <Label fx:id="switchSlot6Name" text="Diancie"   styleClass="switch-name"/>
-                                <Label fx:id="switchSlot6HP"   text="190/190"   styleClass="switch-hp"/>
-                            </VBox>
+                        <Button fx:id="switchSlot6" styleClass="switch-slot" onAction="#onSwitchSlot6" mnemonicParsing="false">
+                            <graphic>
+                                <VBox alignment="CENTER" spacing="2">
+                                    <ImageView fx:id="switchSlot6Icon" fitWidth="48" fitHeight="48" preserveRatio="true"/>
+                                    <Label fx:id="switchSlot6Name" text="Diancie"   styleClass="switch-name"/>
+                                    <Label fx:id="switchSlot6HP"   text="190/190"   styleClass="switch-hp"/>
+                                </VBox>
+                            </graphic>
                         </Button>
                     </HBox>
                 </VBox>

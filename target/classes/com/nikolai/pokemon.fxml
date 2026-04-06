@@ -5,27 +5,38 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.image.ImageView?>
-
+<?import javafx.scene.layout.Region?>
 
 <VBox spacing="10"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.nikolai.PokemonController"
+      fx:controller="com.nikolai.ui.controllers.PokemonController"
+      styleClass="menu-root"
+      stylesheets="@menu.css"
       style="-fx-padding: 20;">
 
-    <Button text="Back" onAction="#goBack"/>
+    <Region styleClass="header-strip" maxWidth="Infinity"/>
 
-    <HBox spacing="10">
-        <TextField fx:id="searchField" promptText="Enter pokemon name or id"/>
-        <Button text="Search" onAction="#onSearchButtonClick"/>
+    <HBox style="-fx-padding: 8 0 4 0; -fx-alignment: center-left;">
+        <Button text="&#8592; Back" onAction="#goBack" styleClass="secondary-button"/>
     </HBox>
 
-    <Label fx:id="nameLabel" text="Name: "/>
-    <Label fx:id="typesLabel" text="Types: "/>
-    <Label fx:id="statsLabel" text="Stats: "/>
-    <Label fx:id="abilityLabel" text="Abilities: "/>
-    <Label fx:id="movesLabel" text="Moves: "/>
-    <HBox spacing="10">
-        <ImageView fx:id="spriteImageView" fitWidth="200" preserveRatio="true"/>
-        <ImageView fx:id="spriteShinyImageView" fitWidth="200" preserveRatio="true"/>
+    <Label text="Pokemon Search" styleClass="title-label"/>
+
+    <HBox spacing="8" style="-fx-padding: 4 0 0 0;">
+        <TextField fx:id="searchField" promptText="Enter pokemon name or id" styleClass="menu-text-field" HBox.hgrow="ALWAYS"/>
+        <Button text="Search" onAction="#onSearchButtonClick" styleClass="menu-button"/>
     </HBox>
+
+    <VBox spacing="4" styleClass="card" style="-fx-margin: 4 0 0 0;">
+        <Label fx:id="nameLabel"    text="Name: "      styleClass="section-label"/>
+        <Label fx:id="typesLabel"   text="Types: "     styleClass="field-label"/>
+        <Label fx:id="statsLabel"   text="Stats: "     styleClass="field-label"/>
+        <Label fx:id="abilityLabel" text="Abilities: " styleClass="field-label"/>
+        <Label fx:id="movesLabel"   text="Moves: "     styleClass="field-label"/>
+        <HBox spacing="10" style="-fx-padding: 6 0 0 0;">
+            <ImageView fx:id="spriteImageView"      fitWidth="200" preserveRatio="true"/>
+            <ImageView fx:id="spriteShinyImageView" fitWidth="200" preserveRatio="true"/>
+        </HBox>
+    </VBox>
+
 </VBox>

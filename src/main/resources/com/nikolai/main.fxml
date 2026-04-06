@@ -2,15 +2,27 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Region?>
 
 <VBox spacing="10"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.nikolai.MainController"
-      style="-fx-padding: 20;">
+      fx:controller="com.nikolai.ui.controllers.MainController"
+      styleClass="menu-root"
+      stylesheets="@menu.css"
+      style="-fx-padding: 30; -fx-alignment: top-center;">
 
-    <Label text="PokeEditor"/>
-    <Button text="Search Pokemon" onAction="#showPokemonSearch"/>
-    <Button text="Create Team" onAction="#createTeam"/>
-    <Button text="Load Team" onAction="#loadTeam"/>
+    <Region styleClass="header-strip" maxWidth="Infinity"/>
+
+    <VBox spacing="6" style="-fx-padding: 20 0 24 0; -fx-alignment: center;">
+        <Label text="PokeEditor" styleClass="title-label"/>
+        <Label text="Manage teams &amp; battle" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
+    </VBox>
+
+    <VBox spacing="8" style="-fx-alignment: center;">
+        <Button text="Search Pokemon" onAction="#showPokemonSearch" styleClass="menu-button" maxWidth="Infinity"/>
+        <Button text="Create Team"    onAction="#createTeam"        styleClass="menu-button" maxWidth="Infinity"/>
+        <Button text="Load Team"      onAction="#loadTeam"          styleClass="menu-button" maxWidth="Infinity"/>
+        <Button text="Battle"         onAction="#teamSelector"      styleClass="menu-button" maxWidth="Infinity"/>
+    </VBox>
 
 </VBox>

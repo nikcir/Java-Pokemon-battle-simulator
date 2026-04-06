@@ -5,43 +5,63 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.ToggleButton?>
 
 <VBox spacing="10"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.nikolai.TeamCreatorController"
+      fx:controller="com.nikolai.ui.controllers.TeamCreatorController"
+      styleClass="menu-root"
+      stylesheets="@menu.css"
       style="-fx-padding: 20;">
 
-    <Button text="Back" onAction="#goBack"/>
-    <Label text="Team Editor"/>
+    <Region styleClass="header-strip" maxWidth="Infinity"/>
 
-    <Label fx:id="teamLabel" text="Team: "/>
-
-    <TextField fx:id="teamNameField" promptText="Enter team name"/>
-
-    <HBox spacing="10">
-        <TextField fx:id="pokemonField" promptText="Enter pokemon name or id"/>
-        <VBox spacing="5">
-            <Label text="Held Item"/>
-            <TextField fx:id="itemField" promptText="Enter held item"/>
-
-            <Label text="Ability"/>
-            <ComboBox fx:id="abilityDropdown" promptText="Select ability"/>
-
-            <Label text="Nature"/>
-            <ComboBox fx:id="natureDropdown" promptText="Select nature"/>
-        </VBox>
-        <VBox spacing="5">
-            <Label text="Moves"/>
-            <ComboBox fx:id="moveDropdown1" promptText="Select move"/>
-            <ComboBox fx:id="moveDropdown2" promptText="Select move"/>
-            <ComboBox fx:id="moveDropdown3" promptText="Select move"/>
-            <ComboBox fx:id="moveDropdown4" promptText="Select move"/>
-        </VBox>
-
-        <Button text="Load Pokemon" onAction="#onLoadPokemon"/>
-        <Button text="Add Pokemon" onAction="#onAddPokemon"/>
+    <HBox style="-fx-padding: 8 0 4 0; -fx-alignment: center-left;">
+        <Button text="&#8592; Back" onAction="#goBack" styleClass="secondary-button"/>
     </HBox>
 
-    <Button text="Save Team" onAction="#onSaveTeam"/>
+    <Label text="Team Editor" styleClass="title-label"/>
+    <Label fx:id="teamLabel" text="Team: " styleClass="field-label"/>
+
+    <TextField fx:id="teamNameField" promptText="Enter team name" styleClass="menu-text-field"/>
+
+    <HBox spacing="12" style="-fx-padding: 4 0 0 0;">
+
+        <VBox spacing="6">
+            <Label text="Pokemon" styleClass="section-label"/>
+            <TextField fx:id="pokemonField" promptText="Name or id" styleClass="menu-text-field"/>
+            <Button text="Load Pokemon" onAction="#onLoadPokemon" styleClass="secondary-button"/>
+            <Button text="Add Pokemon"  onAction="#onAddPokemon"  styleClass="menu-button"/>
+        </VBox>
+
+        <VBox spacing="5" styleClass="card">
+            <Label text="Details" styleClass="section-label"/>
+            <Label text="Held Item" styleClass="field-label"/>
+            <TextField fx:id="itemField" promptText="Enter held item" styleClass="menu-text-field"/>
+            <Label text="Ability" styleClass="field-label"/>
+            <ComboBox fx:id="abilityDropdown" promptText="Select ability" styleClass="menu-combo"/>
+            <Label text="Nature" styleClass="field-label"/>
+            <ComboBox fx:id="natureDropdown" promptText="Select nature" styleClass="menu-combo"/>
+        </VBox>
+
+        <VBox spacing="5" styleClass="card">
+            <Label text="Moves" styleClass="section-label"/>
+            <ComboBox fx:id="moveDropdown1" promptText="Move 1" styleClass="menu-combo"/>
+            <ComboBox fx:id="moveDropdown2" promptText="Move 2" styleClass="menu-combo"/>
+            <ComboBox fx:id="moveDropdown3" promptText="Move 3" styleClass="menu-combo"/>
+            <ComboBox fx:id="moveDropdown4" promptText="Move 4" styleClass="menu-combo"/>
+        </VBox>
+
+        <VBox spacing="5">
+            <ImageView fx:id="spriteImageView" fitWidth="200" preserveRatio="true"/>
+            <ToggleButton fx:id="shinyToggle" text="Normal" 
+                        onAction="#onShinyToggleChanged" 
+                        styleClass="secondary-button"/>
+        </VBox>
+    </HBox>
+
+    <Button text="Save Team" onAction="#onSaveTeam" styleClass="menu-button"/>
 
 </VBox>

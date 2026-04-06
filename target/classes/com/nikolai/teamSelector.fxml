@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.Region?>
+
+<VBox spacing="10"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.nikolai.ui.controllers.TeamSelectorController"
+      styleClass="menu-root"
+      stylesheets="@menu.css"
+      style="-fx-padding: 30; -fx-alignment: top-center;">
+
+    <Region styleClass="header-strip" maxWidth="Infinity"/>
+
+    <VBox spacing="20" style="-fx-padding: 20 0 0 0;">
+        <Label text="Select Teams for Battle" styleClass="title-label"/>
+
+        <HBox spacing="20">
+            <VBox spacing="8" styleClass="card">
+                <Label text="Player 1 Team" styleClass="section-label"/>
+                <ComboBox fx:id="player1TeamCombo" prefWidth="200" styleClass="menu-combo"/>
+            </VBox>
+
+            <VBox spacing="8" styleClass="card">
+                <Label text="Player 2 Team" styleClass="section-label"/>
+                <ComboBox fx:id="player2TeamCombo" prefWidth="200" styleClass="menu-combo"/>
+            </VBox>
+        </HBox>
+
+        <Button text="Start Battle &#9658;" styleClass="menu-button" onAction="#startBattle"/>
+    </VBox>
+
+</VBox>
