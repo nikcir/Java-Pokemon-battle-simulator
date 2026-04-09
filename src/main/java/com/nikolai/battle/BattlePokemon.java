@@ -305,5 +305,14 @@ public class BattlePokemon extends PokemonVariant implements Combatant {
     public String  getNature()            { return nature; }
     public String  getStatusCondition()   { return statusCondition; }
 
+    /** Returns the Move object at the given index, or null if invalid. */
+    public Move getMove(int index) {
+        var slots = pokemon.getMoves();
+        if (index < 0 || index >= slots.size()) return null;
+        MoveSlot slot = slots.get(index);
+        return slot != null ? slot.getMove() : null;
+    }
+
     @Override public List<String> getMoves() { return moves; }
+
 }

@@ -58,12 +58,22 @@ public class Battle {
         if (isSwitch(p1Action)) applySwitch(1, p1Action);
         if (isSwitch(p2Action)) applySwitch(2, p2Action);
 
-        // Speed order via Combatant.compareSpeedTo()
+        // Move priority + speed order
         boolean p1First;
+
         if (isMove(p1Action) && isMove(p2Action)) {
-            int cmp = player1ActivePokemon.compareSpeedTo(player2ActivePokemon);
-            if (cmp == 0) { p1First = RNG.nextBoolean(); pendingLog.add("Speed tie — order randomised!"); }
-            else            p1First = cmp > 0;
+            var p1Move = player1ActivePokemon.getMove(p1Action - 1);
+            var p2Move = player2ActivePokemon.getMove(p2Action - 1);
+            int p1Priority = p1Move != null ? p1Move.getPriority() : 0;
+            int p2Priority = p2Move != null ? p2Move.getPriority() : 0;
+            
+            if (p1Priority != p2Priority) {
+                p1First = p1Priority > p2Priority;
+            } else {
+                int cmp = player1ActivePokemon.compareSpeedTo(player2ActivePokemon);
+                if (cmp == 0) { p1First = RNG.nextBoolean(); pendingLog.add("Speed tie — order randomised!"); }
+                else { p1First = cmp > 0; }
+            }
         } else {
             p1First = isMove(p1Action);
         }

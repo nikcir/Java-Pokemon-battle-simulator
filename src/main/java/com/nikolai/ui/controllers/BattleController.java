@@ -131,6 +131,7 @@ public class BattleController {
         hideForfeitOverlay();
     }
 
+
     private void handleLeadOrReplacementChosen(int slotIndex0) {
         battle.setLead(currentPlayerTurn, slotIndex0);
         for (String line : battle.drainLog()) appendBattleLog(line);
@@ -145,11 +146,13 @@ public class BattleController {
         } else if (mode == Mode.FAINT_P1) {
             if (battle.player2NeedsReplacement()) {
                 mode = Mode.FAINT_P2;
+                
                 enterLeadOrFaintMode(2);
             } else {
                 mode = Mode.NORMAL;
                 currentPlayerTurn = 1;
                 renderFromPerspective(1);
+
             }
         } else if (mode == Mode.FAINT_P2) {
             mode = Mode.NORMAL;

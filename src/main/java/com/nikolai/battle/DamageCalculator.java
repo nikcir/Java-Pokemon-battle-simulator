@@ -87,7 +87,7 @@ public class DamageCalculator {
         // ── Status / non-damaging moves ───────────────────────────────────
         if (move.getPower() <= 0 || move.isStatus()) {
 
-            // HP recovery (Recover, Roost, Soft-Boiled)
+            // Only HP recovery (Recover, Roost, Soft-Boiled)
             if (move.getHealPercent() > 0) {
                 int healAmt = (int) Math.max(1, attacker.getMaxHp() * move.getHealPercent() / 100.0);
                 healedHp = attacker.heal(healAmt);

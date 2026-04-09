@@ -66,7 +66,7 @@ public class Move {
         private int ailmentChance;
 
         /** % of max HP healed. 50 = Recover, 25 = Roost, etc. Positive heals user. */
-        private int heal;
+        private int healing;
 
         /**
          * % of damage dealt drained back. 50 = Drain Punch, 75 = Leech Life.
@@ -82,12 +82,12 @@ public class Move {
 
         public Ailment getAilment()    { return ailment; }
         public int getAilmentChance()  { return ailmentChance; }
-        public int getHeal()           { return heal; }
+        public int getHealing()        { return healing; }
         public int getDrain()          { return drain; }
         public Integer getMinTurns()   { return minTurns; }
         public Integer getMaxTurns()   { return maxTurns; }
     }
-
+// healing fra api
     public static class Ailment {
         private String name; // "paralysis","burn","poison","badly-poisoned","sleep","freeze","none",""
         public String getName() { return name != null ? name : "none"; }
@@ -150,7 +150,7 @@ public class Move {
     // ── Meta helpers ──────────────────────────────────────────────────────
 
     /** % of max HP this move heals the user. 0 if no healing. */
-    public int getHealPercent()  { return meta != null ? meta.getHeal() : 0; }
+    public int getHealPercent()  { return meta != null ? meta.getHealing() : 0; }
 
     /** % of damage dealt that drains back. 0 if no drain. Negative = recoil. */
     public int getDrainPercent() { return meta != null ? meta.getDrain() : 0; }
