@@ -22,6 +22,8 @@ import com.nikolai.ui.App;
 
 public class TeamSelectorController {
 
+    // Controller for the team selection screen before battle. Allows players to choose their teams and start the battle.
+
     @FXML private ComboBox<String> player1TeamCombo;
     @FXML private ComboBox<String> player2TeamCombo;
 
@@ -61,12 +63,9 @@ public class TeamSelectorController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    /**
-     * Fetches pokemon base data, then fetches ONLY the 4 chosen moves (not all 100+).
-     * Passes level and nature so BattlePokemon uses correct stat formula.
-     * The chosen move slots replace the pokemon's full learnable move list.
-     * 1/20 chance for each pokemon to be shiny (front/back sprites use shiny versions).
-     */
+    // Helper method to build a BattlePokemon team from a saved team name. 
+    // This involves fetching the base Pokemon data, then replacing the learnable moves with just the 4 chosen moves,
+    // and randomly toggling shiny status for each Pokemon with a 1/5 chance.
     private List<BattlePokemon> buildTeam(PokeApiService api,
                                            TeamStorageService storage,
                                            String teamName) throws IOException {
@@ -74,19 +73,17 @@ public class TeamSelectorController {
         return storage.loadTeam(teamName).stream()
                 .map(tp -> {
                     try {
-                        // 1. Fetch base pokemon data (stats, types, sprite)
+                        // Fetch base pokemon data (stats, types, sprite)
                         Pokemon pokemon = api.getPokemon(tp.getName());
 
-                        // 2. Fetch the 4 chosen moves with full data (pp, power, damage_class, etc.)
-                        //    tp.getMoves() contains the move names from teams.json
                         List<MoveSlot> chosenMoves = api.buildMoveSlots(tp.getMoves());
 
-                        // 3. Replace the pokemon's full learnable move list with just the 4 chosen
+                        // Replace the pokemon's full learnable move list with just the 4 chosen
                         pokemon.getMoves().clear();
                         pokemon.getMoves().addAll(chosenMoves);
 
-                        // 4. 1/20 chance for shiny — randomly choose between default and shiny sprites
-                        if (random.nextInt(3) == 0) {
+                        // 1/5 chance for shiny
+                        if (random.nextInt(5) == 0) {
                             var sprite = pokemon.getSprite();
                             if (sprite != null) {
                                 sprite.setFront(sprite.getFrontShinyUrl());

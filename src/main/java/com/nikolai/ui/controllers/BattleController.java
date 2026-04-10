@@ -19,7 +19,7 @@ import com.nikolai.pokemon.moves.MoveSlot;
 
 public class BattleController {
 
-    // ── Action encoding ───────────────────────────────────────────────────
+    // Action constants for move buttons, switch buttons, and forfeit
     public static final int ACTION_MOVE_1      = 1;
     public static final int ACTION_MOVE_2      = 2;
     public static final int ACTION_MOVE_3      = 3;
@@ -27,17 +27,17 @@ public class BattleController {
     public static final int ACTION_SWITCH_BASE = 4;
     public static final int ACTION_FORFEIT     = 11;
 
-    // ── State ─────────────────────────────────────────────────────────────
+    // Game state variables
 
     private Battle battle;
     private int currentPlayerTurn   = 1;
     private int player1ChosenAction = -1;
     private int player2ChosenAction = -1;
 
-    private enum Mode { LEAD_P1, LEAD_P2, NORMAL, FAINT_P1, FAINT_P2 }
+    private enum Mode { LEAD_P1, LEAD_P2, NORMAL, FAINT_P1, FAINT_P2 } 
     private Mode mode = Mode.LEAD_P1;
 
-    // ── FXML nodes ────────────────────────────────────────────────────────
+    // FXML bindings for all UI elements that need to be updated dynamically. Organized by section of the UI.
 
     @FXML private Label turnLabel;
 
@@ -52,7 +52,6 @@ public class BattleController {
     @FXML private Label     plyrPoke1VolatileLabel, plyrPoke1HpNumLabel;
     @FXML private Rectangle plyrPoke1HpTrack, plyrPoke1HpFill;
     @FXML private ImageView plyrPoke1Sprite;
-    @FXML private ImageView playerTrainerSprite;
 
     // Battle log
     @FXML private TextArea battleLogArea;
@@ -92,7 +91,7 @@ public class BattleController {
     @FXML private Label     switchSlot1HP,   switchSlot2HP,   switchSlot3HP;
     @FXML private Label     switchSlot4HP,   switchSlot5HP,   switchSlot6HP;
 
-    // ── Init & bind ───────────────────────────────────────────────────────
+    // Initiate battle and bind intance to UI
 
     @FXML private void initialize() { }
 
@@ -105,15 +104,9 @@ public class BattleController {
         enterLeadOrFaintMode(1);
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // LEAD / FAINT SELECTION
-    // ═══════════════════════════════════════════════════════════════════════
+    // Modes for choosing leads at start of battle, and choosing replacements when a pokemon faints. 
+    // Both use the same UI panel and flow, just different prompt text and logic for what pokemon are selectable.
 
-    /**
-     * Shows the switch panel for the given player to choose a pokemon.
-     * Used both for battle-start lead selection and forced replacements after faints.
-     * Pass myActive=null so the currently-out slot is not blocked.
-     */
     private void enterLeadOrFaintMode(int playerNum) {
         currentPlayerTurn = playerNum;
         List<BattlePokemon> myTeam = playerTeam(playerNum);
@@ -139,7 +132,7 @@ public class BattleController {
         hideForfeitOverlay();
     }
 
-
+    // Handles choosing a lead or a replacement, depending on the current mode. After choosing, updates the battle state and UI accordingly.
     private void handleLeadOrReplacementChosen(int slotIndex0) {
         battle.setLead(currentPlayerTurn, slotIndex0);
         for (String line : battle.drainLog()) appendBattleLog(line);
@@ -169,10 +162,8 @@ public class BattleController {
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // NORMAL TURN FLOW
-    // ═══════════════════════════════════════════════════════════════════════
-
+    // Renders the battle UI from the perspective of the given player number (1 or 2). 
+    // This involves updating all dynamic elements of the UI to reflect the current battle state as that player would see it.
     private void renderFromPerspective(int playerNum) {
         if (battle == null) return;
 
@@ -188,7 +179,7 @@ public class BattleController {
         hideForfeitOverlay();
     }
 
-    /** Refreshes both party icon rows and their tooltips. */
+    // Refreshes the party rows for both players based on the battlestate
     private void refreshPartyRows() {
         updatePartyDisplay(playerTeam(currentPlayerTurn),    playerSlotIcons(), playerSlotButtons());
         updatePartyDisplay(opponentTeam(currentPlayerTurn),  oppSlotIcons(),    oppSlotButtons());
@@ -196,6 +187,7 @@ public class BattleController {
         attachPartyTooltips(opponentTeam(currentPlayerTurn), oppSlotButtons());
     }
 
+    // Switches between P1 and P2 turns in chosing moves, and resolves the round.
     private void handleAction(int action) {
         if (currentPlayerTurn == 1) {
             player1ChosenAction = action;
@@ -207,6 +199,7 @@ public class BattleController {
         }
     }
 
+    // Resolves the round and calls battle.resolveRound. Then checks for win conditions and switches
     private void resolveRound() {
         if (battle == null) return;
         battle.resolveRound(player1ChosenAction, player2ChosenAction);
@@ -241,18 +234,12 @@ public class BattleController {
         renderFromPerspective(1);
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // PERSPECTIVE HELPERS
-    // ═══════════════════════════════════════════════════════════════════════
-
+    // Utility methods to get the active pokemon and teams for the current player and opponent, based on perspective. 
     private BattlePokemon playerActive(int p)         { return p==1 ? battle.getPlayer1ActivePokemon() : battle.getPlayer2ActivePokemon(); }
     private BattlePokemon opponentActive(int p)       { return p==1 ? battle.getPlayer2ActivePokemon() : battle.getPlayer1ActivePokemon(); }
     private List<BattlePokemon> playerTeam(int p)     { return p==1 ? battle.getTeam1() : battle.getTeam2(); }
     private List<BattlePokemon> opponentTeam(int p)   { return p==1 ? battle.getTeam2() : battle.getTeam1(); }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // FIELD SIDE UPDATES — status and stat stages always shown
-    // ═══════════════════════════════════════════════════════════════════════
 
     private void updatePlayerSide(BattlePokemon mine) {
         if (mine == null) return;
@@ -267,7 +254,7 @@ public class BattleController {
         updateHpNumLabel(plyrPoke1HpNumLabel, mine);
         if (plyrPoke1HpStatusBar != null)
             plyrPoke1HpStatusBar.setText("HP " + mine.getCurrentHp() + "/" + mine.getMaxHp());
-        setSprite(plyrPoke1Sprite, poke);
+        setSprite(plyrPoke1Sprite, poke, false);
         if (plyrPoke1Sprite != null) {
             if (mine.isFainted()) {
                 ColorAdjust gray = new ColorAdjust();
@@ -290,7 +277,7 @@ public class BattleController {
         updateVolatileLabel(oppPoke1VolatileLabel, opp);
         updateHpBar(oppPoke1HpTrack, oppPoke1HpFill, opp);
         updateHpNumLabel(oppPoke1HpNumLabel, opp);
-        setSprite(oppPoke1Sprite, poke);
+        setSprite(oppPoke1Sprite, poke, true);
         if (oppPoke1Sprite != null) {
             if (opp.isFainted()) {
                 ColorAdjust gray = new ColorAdjust();
@@ -302,10 +289,7 @@ public class BattleController {
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // MOVE DISPLAY — dynamic type colours + tooltips
-    // ═══════════════════════════════════════════════════════════════════════
-
+    // Updates the 4 move buttons and their labels based on the active pokemon's moves.
     private void updateMovesDisplay(BattlePokemon myActive) {
         VBox[]  btns  = {move1Btn,  move2Btn,  move3Btn,  move4Btn};
         Label[] names = {move1Name, move2Name, move3Name, move4Name};
@@ -348,18 +332,7 @@ public class BattleController {
         }
     }
 
-    /**
-     * Installs a tooltip on a move button VBox showing:
-     *   - English description from the API
-     *   - Category (Physical / Special / Status)
-     *   - Base power, accuracy, PP, priority
-     *
-     * Uses smart positioning:
-     *   - Detects if button is in top or bottom half of screen
-     *   - Shows tooltip BELOW if button is in top half
-     *   - Shows tooltip ABOVE if button is in bottom half
-     *   - Positioned to the left to avoid overlapping the button
-     */
+    // Attaches Tooltips to move buttons
     private void installMoveTooltip(VBox btn, Move move, MoveSlot slot) {
         if (btn == null || move == null) return;
 
@@ -390,6 +363,7 @@ public class BattleController {
         tip.setShowDuration(Duration.seconds(15));
         tip.setHideDelay(Duration.millis(100));
 
+        // Tooltip will show above the button
         btn.setOnMouseEntered(e -> {
 
             double tooltipX = btn.localToScreen(0, 0).getX();
@@ -400,17 +374,14 @@ public class BattleController {
         btn.setOnMouseExited(e -> tip.hide());
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // PARTY ICONS + TOOLTIPS
-    // ═══════════════════════════════════════════════════════════════════════
-
+    
     private void updatePartyDisplay(List<BattlePokemon> team, ImageView[] icons, Button[] buttons) {
         if (team == null) return;
         for (int i = 0; i < 6; i++) {
             if (i >= team.size()) break;
             BattlePokemon bp = team.get(i);
             if (bp == null) continue;
-            if (icons[i]   != null) setSprite(icons[i], bp.getPokemon());
+            if (icons[i]   != null) setSprite(icons[i], bp.getPokemon(), true);
             if (buttons[i] != null) {
                 boolean f = bp.isFainted();
                 buttons[i].getStyleClass().remove(f ? "party-icon-alive" : "party-icon-fainted");
@@ -419,18 +390,8 @@ public class BattleController {
         }
     }
 
-    /**
-     * Attaches Tooltips to party icon buttons with smart positioning.
-     *
-     * Smart positioning:
-     *   - Detects if button is in top or bottom half of screen
-     *   - Shows tooltip BELOW if button is in top half
-     *   - Shows tooltip ABOVE if button is in bottom half
-     *   - Positioned to the right to avoid overlapping the button
-     *   - Set showDelay=500ms so brief hover-overs don't trigger.
-     *   - The tooltip shows the pokemon's BATTLE moves (the 4 from teams.json),
-     *     level-adjusted stats, and types.
-     */
+    // Attaches tooltips to the party buttons with detailed info about each pokemon in the party. 
+    // Shows fainted status, types, level-adjusted stats, and moves.
     private void attachPartyTooltips(List<BattlePokemon> team, Button[] buttons) {
         if (team == null) return;
         for (int i = 0; i < 6 && i < team.size(); i++) {
@@ -458,7 +419,7 @@ public class BattleController {
                 sb.append("Status: ").append(bp.getStatusDisplayName()).append("\n");
             }
 
-            // Level-adjusted stats — only the 4 battle moves
+            // Level-adjusted stats and the 4 battle moves
 
             sb.append(bp.getCurrentHp()).append("/").append(bp.getMaxHp()).append(" HP\n");
 
@@ -481,7 +442,7 @@ public class BattleController {
             tip.setShowDuration(Duration.seconds(20));
             tip.setHideDelay(Duration.millis(100));
 
-            final int buttonIndex = i;  // Capture for lambda
+            final int buttonIndex = i;  
             buttons[i].setOnMouseEntered(e -> {
                 // Get screen dimensions and button position
                 double screenHeight = buttons[buttonIndex].getScene().getWindow().getHeight();
@@ -506,15 +467,8 @@ public class BattleController {
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // SWITCH PANEL
-    // ═══════════════════════════════════════════════════════════════════════
+    // Updates the switch panel with the player's team, showing which pokemon are fainted and which one is currently active (not selectable).
 
-    /**
-     * Populates the switch panel slots with sprite, name, and HP.
-     * myActive=null during lead/faint mode so all healthy pokemon are available.
-     * In normal switch mode, the current active pokemon is disabled.
-     */
     private void updateSwitchPanel(List<BattlePokemon> myTeam, BattlePokemon myActive) {
         if (myTeam == null) return;
 
@@ -540,8 +494,8 @@ public class BattleController {
             if (hps[i]   != null) hps[i].setText(bp != null
                     ? bp.getCurrentHp() + "/" + bp.getMaxHp() : "—");
 
-            // Set sprite — the ImageView is inside the Button's graphic VBox
-            if (icons[i] != null) setSprite(icons[i], poke);
+            // Set sprite, the ImageView is inside the Button graphic VBox
+            if (icons[i] != null) setSprite(icons[i], poke, true);
 
             boolean isCurrent = myActive != null && bp == myActive;
             boolean isFainted  = bp != null && bp.isFainted();
@@ -552,10 +506,7 @@ public class BattleController {
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // PANEL VISIBILITY
-    // ═══════════════════════════════════════════════════════════════════════
-
+    
     private void showPanel(VBox panel) {
         for (VBox p : new VBox[]{attackPanel, switchPanel, itemPanel}) {
             if (p != null) { p.setVisible(false); p.setManaged(false); }
@@ -571,14 +522,12 @@ public class BattleController {
         if (forfeitOverlay != null) { forfeitOverlay.setVisible(false); forfeitOverlay.setManaged(false); }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // LOW-LEVEL HELPERS
-    // ═══════════════════════════════════════════════════════════════════════
-
+    
     private void updateTurnDisplay() {
         if (turnLabel != null && battle != null) turnLabel.setText("Turn " + battle.getTurn());
     }
 
+    // Updates the prompt label at the top of the screen that tells the player to choose their move, and shows the name of their active pokemon.
     private void updatePrompt(int playerNum, BattlePokemon myActive) {
         String pokeName = (myActive != null && myActive.getPokemon() != null)
                 ? myActive.getPokemon().getName() : "???";
@@ -587,7 +536,7 @@ public class BattleController {
             promptLabel.setText(" (P" + playerNum + ") — choose your move!");
     }
 
-    /** Updates the status badge (BRN / PAR / PSN / etc.) — always visible when set. */
+    // Updates the status condition label (paralyzed, asleep, poisoned)
     private void updateStatusLabel(Label label, BattlePokemon bp) {
         if (label == null || bp == null) return;
         String display = bp.getStatusDisplayName();
@@ -597,7 +546,7 @@ public class BattleController {
         label.setManaged(has);
     }
 
-    /** Updates the stat-stage overlay (+2 ATK / -1 DEF) — always visible when non-zero. */
+    // Updates the volatile status label (stat stages, confusion, leechseed, etc.)
     private void updateVolatileLabel(Label label, BattlePokemon bp) {
         if (label == null || bp == null) return;
         String stages = bp.getStatStageDisplay();
@@ -622,16 +571,13 @@ public class BattleController {
         if (label != null && bp != null) label.setText(bp.getCurrentHp() + "/" + bp.getMaxHp());
     }
 
-    /**
-     * Sets a sprite safely. Guards against null Sprite, null/empty URL,
-     * and Image.isError() which would crash or blank the ImageView.
-     */
-    private void setSprite(ImageView view, Pokemon poke) {
+
+    private void setSprite(ImageView view, Pokemon poke, boolean front) {
         if (view == null || poke == null) return;
         var sprite = poke.getSprite();
         if (sprite == null) return;
         try {
-            Image img = sprite.getFront();
+            Image img = front ? sprite.getFront() : sprite.getBack();
             if (img != null && !img.isError()) view.setImage(img);
         } catch (Exception ignored) { }
     }
@@ -642,7 +588,7 @@ public class BattleController {
     private ImageView[] oppSlotIcons()     { return new ImageView[]{oppSlot1Icon,   oppSlot2Icon,   oppSlot3Icon,   oppSlot4Icon,   oppSlot5Icon,   oppSlot6Icon};   }
     private Button[]    oppSlotButtons()   { return new Button[]   {oppSlot1,       oppSlot2,       oppSlot3,       oppSlot4,       oppSlot5,       oppSlot6};       }
 
-    // ── Battle log ────────────────────────────────────────────────────────
+    // Battle log
 
     public void appendBattleLog(String msg) {
         if (battleLogArea != null) battleLogArea.appendText(msg + "\n");
@@ -652,19 +598,13 @@ public class BattleController {
         if (battleLogArea != null) battleLogArea.clear();
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // FXML EVENT HANDLERS
-    // ═══════════════════════════════════════════════════════════════════════
-
+    // FXML event handlers for move buttons, switch buttons, tab buttons, forfeit confirmation, and party buttons.
     @FXML private void onMove1Clicked() { handleAction(ACTION_MOVE_1); }
     @FXML private void onMove2Clicked() { handleAction(ACTION_MOVE_2); }
     @FXML private void onMove3Clicked() { handleAction(ACTION_MOVE_3); }
     @FXML private void onMove4Clicked() { handleAction(ACTION_MOVE_4); }
 
-    /**
-     * All 6 switch slot buttons call this. Routes to lead/faint selection
-     * or normal in-battle switching depending on current mode.
-     */
+    
     @FXML private void onSwitchSlot1() { dispatchSwitchSlot(0); }
     @FXML private void onSwitchSlot2() { dispatchSwitchSlot(1); }
     @FXML private void onSwitchSlot3() { dispatchSwitchSlot(2); }

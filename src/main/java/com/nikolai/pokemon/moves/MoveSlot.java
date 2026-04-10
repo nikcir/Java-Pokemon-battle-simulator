@@ -1,6 +1,7 @@
 package com.nikolai.pokemon.moves;
 
 public class MoveSlot {
+    // Class representing a move slot for a Pokemon, containing the move and its current PP. Used in BattlePokemon.
     private Move move;
     private int currentPp;
 

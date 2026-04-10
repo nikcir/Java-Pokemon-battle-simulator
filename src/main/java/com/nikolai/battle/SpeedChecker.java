@@ -3,7 +3,9 @@ package com.nikolai.battle;
 import java.util.Random;
 
 public class SpeedChecker {
-
+    
+    // Utility class for comparing the speed of two combatants to determine move order in battle. 
+    // Uses Combatant compareSpeedTo method, and decides ties randomly.
     private static final Random RNG = new Random();
 
     public static boolean isFaster(Combatant a, Combatant b) { return a.compareSpeedTo(b) > 0; }

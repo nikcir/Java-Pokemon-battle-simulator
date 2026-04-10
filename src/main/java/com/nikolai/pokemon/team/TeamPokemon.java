@@ -4,6 +4,8 @@ import java.util.List;
 import com.nikolai.pokemon.core.PokemonVariant;
 
 public class TeamPokemon extends PokemonVariant {
+    // Class representing a Pokemon in a player's team, containing the Pokemon's name, held item, moves, nature, and level. 
+    // Used in PlayerTeam.
     private String heldItem;
     private String nature;
     private int level = 50;

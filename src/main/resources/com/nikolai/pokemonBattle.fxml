@@ -154,15 +154,6 @@
                                styleClass="pokemon-sprite"/>
                 </VBox>
 
-                <!-- ── Player sprites (front-left area) ──────── -->
-                <!-- Trainer sprite -->
-                <ImageView fx:id="playerTrainerSprite"
-                           fitWidth="90" fitHeight="140" preserveRatio="true"
-                           StackPane.alignment="BOTTOM_LEFT"
-                           styleClass="trainer-sprite">
-                    <StackPane.margin><Insets bottom="50" left="30"/></StackPane.margin>
-                </ImageView>
-
                 <!-- Player Pokemon 1 -->
                 <VBox StackPane.alignment="BOTTOM_LEFT" maxWidth="-Infinity" maxHeight="-Infinity" spacing="2">
                     <StackPane.margin><Insets bottom="60" left="120"/></StackPane.margin>

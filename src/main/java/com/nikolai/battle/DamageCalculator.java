@@ -9,7 +9,7 @@ public class DamageCalculator {
 
     private static final Random RNG = new Random();
 
-    // ── Result ────────────────────────────────────────────────────────────
+    // Result of a move application, including all effects (damage, healing, status, stat changes, etc.)
 
     public static class Result {
         public final boolean hit;
@@ -31,11 +31,13 @@ public class DamageCalculator {
             this.statStageChanges = statStageChanges;
         }
 
+        // Method for a missed move (no damage or effects).
         public static Result miss() {
             return new Result(false, 0, 0, 1.0, false, null, Collections.emptyList());
         }
     }
-
+    
+    // Represents a stat stage change applied by a move, for display in the battle log.
     public static class StatStageChange {
         public final String statName;
         public final int requested;
@@ -43,24 +45,15 @@ public class DamageCalculator {
         public StatStageChange(String n, int r, int a) { statName=n; requested=r; applied=a; }
     }
 
-    // ── Public API ────────────────────────────────────────────────────────
 
-    /**
-     * Calculates and applies all effects of a move:
-     *   - Accuracy check (with stage modifiers)
-     *   - Damage (physical/special, with level-adjusted stats and stage multipliers)
-     *   - Drain (e.g. Drain Punch heals attacker for 50% of damage)
-     *   - Recoil (e.g. Flare Blitz hurts attacker)
-     *   - HP recovery (e.g. Recover, Roost)
-     *   - Stat stage changes (e.g. Swords Dance, Growl)
-     *   - Status infliction (e.g. Scald burns, Thunder Wave paralyzes)
-     *
-     * Burn halves physical attack; status immunity is checked in BattlePokemon.
-     */
+    // Main method to calculate and apply move effects, returning a Result object with all details.
+    // Handles accuracy, damage, healing, status infliction, and stat changes.
+
     public static Result calculateAndApply(BattlePokemon attacker, int moveSlotIdx, BattlePokemon defender) {
         if (attacker == null || defender == null) return Result.miss();
         if (attacker.getPokemon() == null || defender.getPokemon() == null) return Result.miss();
 
+        // Validate move slot and PP
         var slots = attacker.getPokemon().getMoves();
         if (slots == null || moveSlotIdx >= slots.size()) return Result.miss();
 
@@ -78,13 +71,14 @@ public class DamageCalculator {
         // Determine actual target: self-targeting moves act on the attacker
         BattlePokemon directTarget = move.targetsUser() ? attacker : defender;
 
+        // Initialize result variables
         int damage = 0;
         int healedHp = 0;
         double typeMultiplier = 1.0;
         boolean stab = false;
         String statusInflicted = null;
 
-        // ── Status / non-damaging moves ───────────────────────────────────
+        // Status moves (Toxic, Thunder Wave) and healing moves (Recover, Roost, Soft-Boiled) don't deal damage but can have other effects.
         if (move.getPower() <= 0 || move.isStatus()) {
 
             // Only HP recovery (Recover, Roost, Soft-Boiled)
@@ -102,8 +96,8 @@ public class DamageCalculator {
             return new Result(true, 0, healedHp, 1.0, false, statusInflicted, stages);
         }
 
-        // ── Damage moves ──────────────────────────────────────────────────
-        boolean isSpecial = move.isSpecial() || (!move.isPhysical() && isSpecialByType(move));
+        // Damaging moves: calculate damage based on move power, stats, type effectiveness, STAB, and random variance.
+        boolean isSpecial = move.isSpecial();
 
         String atkStat = isSpecial ? "special-attack" : "attack";
         String defStat = isSpecial ? "special-defense" : "defense";
@@ -128,7 +122,7 @@ public class DamageCalculator {
                 * move.getPower() * atkVal / defVal) / 50.0 + 2.0;
         damage = (int) Math.max(1, Math.floor(base * (stab ? 1.5 : 1.0) * typeMultiplier * roll));
 
-        // Don't overkill beyond current HP
+        // Cant deal more damage then the defenders current HP
         damage = Math.min(damage, defender.getCurrentHp());
         defender.applyDamage(damage);
 
@@ -138,11 +132,11 @@ public class DamageCalculator {
             healedHp = attacker.heal(drainAmt);
         }
 
-        // Recoil (Flare Blitz, Double-Edge, Head Smash)
+        // Recoil (Flare Blitz, Double Edge, Head Smash)
         if (move.getDrainPercent() < 0 && damage > 0) {
             int recoil = (int) Math.max(1, damage * (-move.getDrainPercent()) / 100.0);
             attacker.applyDamage(recoil);
-            healedHp = -recoil; // negative = recoil in result
+            healedHp = -recoil; // negative heal becomes recoil in result
         }
 
         // Status from damage moves (Scald burn, Thunder paralysis, Blizzard freeze, etc.)
@@ -151,14 +145,14 @@ public class DamageCalculator {
         return new Result(true, damage, healedHp, typeMultiplier, stab, statusInflicted, Collections.emptyList());
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────
+    // Helper methods for calculating move effects
 
     private static String tryInflictStatus(Move move, BattlePokemon attacker, BattlePokemon target) {
         String ailment = move.getAilmentName();
         if (ailment == null || ailment.isBlank() || "none".equals(ailment)) return null;
 
         int chance = move.getAilmentChance();
-        // chance == 0 means "always inflicts" for primary-effect status moves (Thunder Wave, etc.)
+        // chance of 0 means default 100% chance to inflict for moves that always inflict status if hit (Thunder Wave, Toxic, etc.)
         if (chance == 0) chance = 100;
 
         if (RNG.nextInt(100) < chance) {
@@ -168,6 +162,7 @@ public class DamageCalculator {
         return null;
     }
 
+    // Applies stat stage changes from a move, returning a list of what was applied for display in the battle log.
     private static List<StatStageChange> applyMoveStatChanges(Move move, BattlePokemon attacker, BattlePokemon defender) {
         var changes = move.getStatChanges();
         if (changes == null || changes.isEmpty()) return Collections.emptyList();
@@ -177,7 +172,7 @@ public class DamageCalculator {
             if (sc.getStat() == null) continue;
             int idx = statNameToIndex(sc.getStat().getName());
             if (idx < 0) continue;
-            // Positive change = buff (apply to attacker), negative = debuff (apply to defender)
+            // Positive change > 0 means buff to user, negative < 0 means debuff to opponent.
             BattlePokemon target = sc.getChange() >= 0 ? attacker : defender;
             int applied = target.applyStatStage(idx, sc.getChange());
             results.add(new StatStageChange(sc.getStat().getName(), sc.getChange(), applied));
@@ -192,6 +187,7 @@ public class DamageCalculator {
         return RNG.nextDouble() * 100 < effective;
     }
 
+    // Returns 2.0 for super effective, 1.0 for normal, 0.5 for not very effective, 0 for no effect
     private static double typeEffectiveness(Move move, BattlePokemon defender) {
         if (move.getType() == null) return 1.0;
         String mt = move.getType().getName().toLowerCase();
@@ -207,6 +203,7 @@ public class DamageCalculator {
         return mult;
     }
 
+    // Returns true if the move gets STAB for the attacker.
     private static boolean hasStab(BattlePokemon attacker, Move move) {
         if (move.getType() == null) return false;
         String mt = move.getType().getName().toLowerCase();
@@ -216,14 +213,7 @@ public class DamageCalculator {
                 .anyMatch(ts -> mt.equals(ts.getType().getName().toLowerCase()));
     }
 
-    private static boolean isSpecialByType(Move move) {
-        if (move.getType() == null) return false;
-        return switch (move.getType().getName().toLowerCase()) {
-            case "fire","water","electric","grass","ice","psychic","dragon","dark","fairy" -> true;
-            default -> false;
-        };
-    }
-
+    // Converts a stat name string to the corresponding stat stage index used in BattlePokemon. Returns -1 if invalid.
     public static int statNameToIndex(String name) {
         if (name == null) return -1;
         return switch (name.toLowerCase()) {
@@ -238,8 +228,8 @@ public class DamageCalculator {
         };
     }
 
-    // ── Type chart ────────────────────────────────────────────────────────
-
+    // Type chart for calculating type effectiveness. Values are percentages (200 = 2x, 50 = 0.5x, 0 = no effect).
+    // Uses Map of Maps for easy lookup: CHART.get(attackingType).get(defendingType) -> multiplier.
     private static final Map<String, Map<String, Integer>> CHART = new HashMap<>();
     static {
         add("normal","rock",50);add("normal","ghost",0);add("normal","steel",50);

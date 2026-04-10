@@ -47,7 +47,7 @@ public class StatCalculator {
         double raw = Math.floor(2.0 * base * level / 100.0) + 5;
         return (int) Math.floor(raw * getNatureModifier(nature, stat));
     }
-
+    // Returns the nature modifier for a given stat based on the nature. 1.1 if boosted, 0.9 if hindered, 1.0 otherwise.
     public static double getNatureModifier(String nature, String stat) {
         if (nature == null || stat == null) return 1.0;
         String[] mods = NATURE_MODIFIERS.get(nature.toLowerCase());
@@ -56,7 +56,7 @@ public class StatCalculator {
         if (stat.equals(mods[1])) return 0.9;
         return 1.0;
     }
-
+    // Utility method to get the base stat for a given stat name from a Pokemon object. Returns 1 if not found or invalid input.
     public static int getBase(Pokemon pokemon, String statName) {
         if (pokemon == null || pokemon.getStats() == null) return 1;
         return pokemon.getStats().stream()
@@ -65,7 +65,7 @@ public class StatCalculator {
                 .map(StatSlot::getBaseStat)
                 .orElse(1);
     }
-
+    // Utility method to generate a summary string of all the stats for a Pokemon
     public static String statSummary(Pokemon pokemon, int level, String nature) {
         String[] names  = {"hp","attack","defense","special-attack","special-defense","speed"};
         String[] labels = {"HP","ATK","DEF","SP.ATK","SP.DEF","SPE"};

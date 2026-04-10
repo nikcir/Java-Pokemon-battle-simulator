@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
 
-import org.w3c.dom.css.Rect;
 
 import javafx.stage.Screen;
 import javafx.geometry.Rectangle2D;
@@ -21,13 +20,15 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        // Set the primary stage and show the main menu.
         primaryStage = stage;
         switchTo("main.fxml");
-        stage.setTitle("Pokedex");
+        stage.setTitle("Pokemon");
         stage.show();
     }
 
     public static void switchTo(String fxml) throws IOException {
+        // Load the specified FXML file and set it as the current scene. 
         FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/nikolai/" + fxml));
         Scene scene = new Scene(loader.load(), screenWidth/2, screenHeight*2/3);
         primaryStage.setScene(scene);

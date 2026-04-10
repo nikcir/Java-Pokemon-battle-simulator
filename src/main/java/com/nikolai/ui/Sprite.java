@@ -3,6 +3,7 @@ package com.nikolai.ui;
 import javafx.scene.image.Image;
 
 public class Sprite {
+    // Class to hold sprite URLs and provide methods to get JavaFX Image objects.
     private String front_default;
     private String front_shiny;
     private String front;

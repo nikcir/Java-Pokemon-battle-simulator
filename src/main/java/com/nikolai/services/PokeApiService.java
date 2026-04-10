@@ -16,14 +16,10 @@ public class PokeApiService {
 
     private final HttpClient client = HttpClient.newHttpClient();
     private final Gson gson = new Gson();
+    // API base URL for fetching Pokemon and move data
     private static final String BASE_URL = "https://pokeapi.co/api/v2/";
 
-    /**
-     * Fetches a Pokemon's base data (stats, types, sprite, ability list).
-     * The move list returned contains ALL learnable moves with stub data only.
-     * Use buildMoveSlots() instead to get fully-populated move slots for
-     * the 4 moves actually chosen in the team.
-     */
+    // Fetches full Pokemon data for a specific named Pokemon or ID, including types, stats, abilities, moves, and sprites.
     public Pokemon getPokemon(String nameOrId) throws Exception {
         HttpRequest req = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "pokemon/" + nameOrId))
@@ -32,11 +28,7 @@ public class PokeApiService {
         return gson.fromJson(res.body(), Pokemon.class);
     }
 
-    /**
-     * Fetches full move data for a specific named move.
-     * Returns a fully populated Move with pp, power, accuracy, damage_class,
-     * stat_changes, meta (heal, drain, ailment), and effect_entries.
-     */
+    // Fetches full move data for a specific named move or ID, including type, power, accuracy, PP, and effects.
     public Move getMoveData(String moveName) throws Exception {
         HttpRequest req = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "move/" + moveName))
@@ -47,9 +39,7 @@ public class PokeApiService {
 
     /**
      * Builds a list of exactly the 4 move slots for a pokemon, fetching full
-     * move data for each chosen move name. This replaces the old populateMoves()
-     * which iterated ALL learnable moves (100+) — extremely wasteful.
-     *
+     * move data for each chosen move name. 
      * @param chosenMoveNames the 4 move names from teams.json (e.g. ["earthquake","u-turn",…])
      * @return list of MoveSlot with fully populated Move objects
      */
@@ -67,20 +57,4 @@ public class PokeApiService {
         }
         return slots;
     }
-
-    /**
-     * @deprecated Use buildMoveSlots(chosenMoveNames) instead.
-     * This fetches ALL learnable moves which is very slow and includes stubs.
-     */
-    // @Deprecated
-    // public void populateMoves(List<MoveSlot> moveSlots) throws Exception {
-    //     if (moveSlots == null) return;
-    //     for (MoveSlot slot : moveSlots) {
-    //         if (slot == null || slot.getMove() == null) continue;
-    //         String name = slot.getMove().getName();
-    //         if (name == null || name.isBlank()) continue;
-    //         Move full = getMoveData(name);
-    //         if (full != null) { slot.setMove(full); slot.setCurrentPp(full.getPp()); }
-    //     }
-    // }
 }

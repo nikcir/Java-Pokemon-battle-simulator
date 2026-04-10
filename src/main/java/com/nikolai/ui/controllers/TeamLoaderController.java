@@ -12,15 +12,18 @@ import com.nikolai.ui.App;
 
 public class TeamLoaderController {
 
+
     @FXML private TextField teamName;
     @FXML private Label teamLabel;
 
     @FXML
     public void goBack() throws IOException {
+        // Back button to return to the main menu.
         App.switchTo("main.fxml");
     }
 
     public void onLoadTeam() throws Exception {
+        // Load the team with the name entered in the teamName field using the TeamStorageService, and display the team details in the teamLabel.
         String name = teamName.getText().trim();
         if (name.isEmpty()) {
             teamLabel.setText("Please enter a team name");
@@ -40,6 +43,8 @@ public class TeamLoaderController {
                         .reduce((a, b) -> a + "\n" + b)
                         .orElse("No Pokemon in team"));
     }
+
+    // TeamStorageService methods for deleting a team and showing all saved teams.
 
     public void onDeleteTeam() throws Exception {
         String name = teamName.getText().trim();

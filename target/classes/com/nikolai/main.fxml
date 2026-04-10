@@ -14,7 +14,7 @@
     <Region styleClass="header-strip" maxWidth="Infinity"/>
 
     <VBox spacing="6" style="-fx-padding: 20 0 24 0; -fx-alignment: center;">
-        <Label text="PokeEditor" styleClass="title-label"/>
+        <Label text="Pokeman" styleClass="title-label"/>
         <Label text="Manage teams &amp; battle" style="-fx-font-size: 11px; -fx-text-fill: #888;"/>
     </VBox>
 

@@ -8,9 +8,8 @@ import com.nikolai.pokemon.stat.StatSlot;
 import com.nikolai.pokemon.type.TypeSlot;
 import com.nikolai.ui.Sprite;
 
-import javafx.scene.image.Image;
-
 public class Pokemon {
+    // Core Pokemon class
     private int id;
     private String name;
     private List<TypeSlot> types;

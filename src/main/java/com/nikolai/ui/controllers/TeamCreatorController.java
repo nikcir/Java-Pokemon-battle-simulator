@@ -54,9 +54,12 @@ public class TeamCreatorController {
 
     @FXML
     public void onLoadPokemon() {
+        // Fetch the Pokemon data based on the name entered in the pokemonField, and populate the ability and move dropdowns, 
+        // as well as display the sprite. Also store the current Pokemon for later use when adding to team.
         String pokemonName = pokemonField.getText().trim();
         if (pokemonName.isEmpty()) return;
 
+        // Use a background thread to fetch Pokemon data to avoid freezing the UI.
         Task<Pokemon> task = new Task<>() {
             @Override
             protected Pokemon call() throws Exception {
@@ -64,6 +67,7 @@ public class TeamCreatorController {
             }
         };
 
+        // When the task succeeds, update the UI with the fetched Pokemon data.
         task.setOnSucceeded(e -> {
             Pokemon pokemon = task.getValue();
 
@@ -74,6 +78,7 @@ public class TeamCreatorController {
 
             List<String> moves = pokemon.getMoves().stream()
                     .map(m -> m.getMove().getName())
+                    .sorted()
                     .collect(Collectors.toList());
             moveDropdown1.setItems(FXCollections.observableArrayList(moves));
             moveDropdown2.setItems(FXCollections.observableArrayList(moves));
@@ -87,8 +92,8 @@ public class TeamCreatorController {
             spriteImageView.setImage(image);
 
 
-            currentPokemon = pokemon;  // ← STORE IT
-            showingShiny = false;      // ← RESET TO NORMAL
+            currentPokemon = pokemon; 
+            showingShiny = false;     
             shinyToggle.setSelected(false);
             shinyToggle.setText("Normal");
 
@@ -108,6 +113,7 @@ public class TeamCreatorController {
 
     @FXML
     public void onShinyToggleChanged() {
+        // Toggle between normal and shiny sprite when the shinyToggle button is clicked. Update the button text accordingly.
         showingShiny = shinyToggle.isSelected();
         shinyToggle.setText(showingShiny ? "Shiny" : "Normal"); 
         updateSpriteDisplay();
@@ -128,6 +134,7 @@ public class TeamCreatorController {
 
     @FXML
     public void onAddPokemon() {
+        // Add the currently loaded Pokemon to the team with the selected held item, ability, nature, and moves. 
         String pokemonName = pokemonField.getText().trim();
         String heldItem = itemField.getText().trim();
         String ability = abilityDropdown.getValue();
@@ -153,6 +160,7 @@ public class TeamCreatorController {
 
     @FXML
     public void onSaveTeam() throws Exception {
+        // Save the current team to a file using the TeamStorageService. 
         String teamName = teamNameField.getText().trim();
         if (teamName.isEmpty()) {
             teamLabel.setText("Please enter a team name");
@@ -166,6 +174,7 @@ public class TeamCreatorController {
 
     @FXML
     public void goBack() throws IOException {
+        // Back button
         App.switchTo("main.fxml");
     }
 }

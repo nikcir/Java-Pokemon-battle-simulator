@@ -21,7 +21,7 @@ public class Battle {
         this.team2 = team2;
     }
 
-    // ── Lead / forced-switch ──────────────────────────────────────────────
+    // Lead or forced-switch 
 
     public void setLead(int playerNum, int teamSlotIndex) {
         List<BattlePokemon> team = playerNum == 1 ? team1 : team2;
@@ -46,7 +46,7 @@ public class Battle {
         return player2ActivePokemon == null || player2ActivePokemon.isFainted();
     }
 
-    // ── Round resolution ──────────────────────────────────────────────────
+    // Round resolution 
 
     public void resolveRound(int p1Action, int p2Action) {
         pendingLog.clear();
@@ -86,13 +86,13 @@ public class Battle {
             if (player1ActivePokemon != null && !player1ActivePokemon.isFainted()) executeMove(1, p1Action);
         }
 
-        // End-of-turn status damage (burn, poison, bad-poison)
+        // End of turn status damage (burn, poison, bad-poison)
         processEndOfTurnStatuses();
 
         turn++;
     }
 
-    // ── Move execution ────────────────────────────────────────────────────
+    // Move execution and effects
 
     private void executeMove(int actorNum, int action) {
         if (!isMove(action)) return;
@@ -162,7 +162,7 @@ public class Battle {
         if (attacker.isFainted()) pendingLog.add("  " + attacker.getName() + " fainted from recoil!");
     }
 
-    // ── End-of-turn status ────────────────────────────────────────────────
+    // End of turn status
 
     private void processEndOfTurnStatuses() {
         processStatus(player1ActivePokemon);
@@ -178,7 +178,7 @@ public class Battle {
         }
     }
 
-    // ── Switch ────────────────────────────────────────────────────────────
+    // Switch 
 
     private void applySwitch(int playerNum, int action) {
         int idx = (action - 4) - 1; // action 5→idx 0, action 10→idx 5
@@ -193,7 +193,7 @@ public class Battle {
         pendingLog.add("P" + playerNum + " switched to " + target.getName() + "!");
     }
 
-    // ── Log ───────────────────────────────────────────────────────────────
+    // Log
 
     public List<String> drainLog() {
         List<String> copy = new ArrayList<>(pendingLog);
@@ -201,13 +201,13 @@ public class Battle {
         return copy;
     }
 
-    // ── Win conditions ────────────────────────────────────────────────────
+    //  Winconditions
 
     public boolean isTeam1Wiped() { return team1 != null && team1.stream().allMatch(BattlePokemon::isFainted); }
     public boolean isTeam2Wiped() { return team2 != null && team2.stream().allMatch(BattlePokemon::isFainted); }
     public int getForfeitedPlayer() { return forfeitedPlayer; }
 
-    // ── Utility ───────────────────────────────────────────────────────────
+    // Utility
 
     private static boolean isMove(int a)   { return a >= 1 && a <= 4; }
     private static boolean isSwitch(int a) { return a >= 5 && a <= 10; }
@@ -231,7 +231,7 @@ public class Battle {
         };
     }
 
-    // ── Getters / setters ─────────────────────────────────────────────────
+    // Getters & setters
 
     public List<BattlePokemon> getTeam1()                 { return team1; }
     public List<BattlePokemon> getTeam2()                 { return team2; }
@@ -240,5 +240,4 @@ public class Battle {
     public int getTurn()                                  { return turn; }
     public void setPlayer1ActivePokemon(BattlePokemon p)  { player1ActivePokemon = p; }
     public void setPlayer2ActivePokemon(BattlePokemon p)  { player2ActivePokemon = p; }
-    @Deprecated public void incrementTurn() { turn++; }
 }

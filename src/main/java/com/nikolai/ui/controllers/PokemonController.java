@@ -15,6 +15,7 @@ import com.nikolai.ui.App;
 
 public class PokemonController {
 
+
     @FXML private TextField searchField;
     @FXML private Label nameLabel;
     @FXML private Label typesLabel;
@@ -39,13 +40,14 @@ public class PokemonController {
             return;
         };
 
+        // Use a background thread to fetch Pokemon data to avoid freezing the UI.
         Task<Pokemon> task = new Task<>() {
             @Override
             protected Pokemon call() throws Exception {
                 return pokeApiService.getPokemon(searchInput);
             }
         };
-
+        // When the task succeeds, update the UI with the fetched Pokemon data.
         task.setOnSucceeded(e -> {
             Pokemon pokemon = task.getValue();
             nameLabel.setText(pokemon.getName());

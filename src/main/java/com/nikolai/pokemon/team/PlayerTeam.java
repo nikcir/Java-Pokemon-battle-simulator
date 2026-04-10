@@ -3,6 +3,7 @@ package com.nikolai.pokemon.team;
 import java.util.List;
 
 public class PlayerTeam {
+    // Class representing a player's team of Pokemon, containing the team name and a list of TeamPokemon objects.
     private String teamName;
     private List<TeamPokemon> team;
 

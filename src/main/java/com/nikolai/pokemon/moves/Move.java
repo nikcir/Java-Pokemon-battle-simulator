@@ -5,21 +5,9 @@ import com.nikolai.pokemon.type.Type;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Maps to the PokeAPI /move/{name} endpoint.
- *
- * Key fields used in battle:
- *   damage_class   physical / special / status
- *   stat_changes   e.g. Swords Dance: [{change:+2, stat:{name:"attack"}}]
- *   meta.heal      % of max HP healed (positive = heals user, e.g. Recover = 50)
- *   meta.drain     % of damage dealt drained back to user (e.g. Drain Punch = 50)
- *   meta.ailment   status condition inflicted (paralysis, burn, poison, sleep, …)
- *   meta.ailment_chance  % chance to inflict the ailment
- *   effect_entries English short_effect description shown in tooltip
- *   target         user / selected-pokemon / etc.
- */
-public class Move {
 
+public class Move {
+    // Core Move class, represents a Pokemon move with all its properties and effects.
     private int accuracy;
     private int power;
     private int pp;
@@ -40,7 +28,7 @@ public class Move {
 
     private Target target;
 
-    // ── Inner types ───────────────────────────────────────────────────────
+    // Nested classes for move properties and effects
 
     public static class DamageClass {
         private String name;
@@ -60,20 +48,19 @@ public class Move {
     }
 
     public static class Meta {
+        // Meta information about the move, such as ailment inflicted, healing, drain, etc.
         private Ailment ailment;
 
         @SerializedName("ailment_chance")
         private int ailmentChance;
 
-        /** % of max HP healed. 50 = Recover, 25 = Roost, etc. Positive heals user. */
+        // % of max HP this move heals the user. 0 if no healing.
         private int healing;
 
-        /**
-         * % of damage dealt drained back. 50 = Drain Punch, 75 = Leech Life.
-         * Negative = user takes recoil (e.g. -25 = 25% recoil).
-         */
+        // % of damage dealt that drains back. 0 if no drain. Negative means recoil.
         private int drain;
 
+        // Minimum number of turns (for multi-turn moves like sleep, freeze)
         @SerializedName("min_turns")
         private Integer minTurns;
 
@@ -87,7 +74,7 @@ public class Move {
         public Integer getMinTurns()   { return minTurns; }
         public Integer getMaxTurns()   { return maxTurns; }
     }
-// healing fra api
+
     public static class Ailment {
         private String name; // "paralysis","burn","poison","badly-poisoned","sleep","freeze","none",""
         public String getName() { return name != null ? name : "none"; }
@@ -112,11 +99,15 @@ public class Move {
     }
 
     public static class Target {
+        // Target of the move, "user" for self-targeting moves, 
+        // "selected-pokemon" for normal moves, "all-opponents" for spread moves, 
+        // "random-opponent" for moves that target a random opponent
+
         private String name; // "user","selected-pokemon","all-opponents","random-opponent",…
         public String getName() { return name != null ? name : "selected-pokemon"; }
     }
 
-    // ── Getters ───────────────────────────────────────────────────────────
+    // Getters for Move properties
 
     public int    getAccuracy()  { return accuracy; }
     public int    getPower()     { return power; }
@@ -130,7 +121,7 @@ public class Move {
     public Meta                  getMeta()         { return meta; }
     public Target                getTarget()       { return target; }
 
-    /** English short_effect, falling back to long effect, then empty string. */
+    // Returns the English effect description of the move, preferring the short effect if available. Returns empty string if no English entry found.
     public String getEnglishEffect() {
         if (effectEntries == null) return "";
         return effectEntries.stream()
@@ -141,35 +132,34 @@ public class Move {
                 .orElse("");
     }
 
-    // ── Damage class helpers ──────────────────────────────────────────────
+    // Helper methods for move type
 
     public boolean isPhysical() { return damageClass != null && "physical".equals(damageClass.getName()); }
     public boolean isSpecial()  { return damageClass != null && "special".equals(damageClass.getName()); }
     public boolean isStatus()   { return damageClass == null || "status".equals(damageClass.getName()); }
 
-    // ── Meta helpers ──────────────────────────────────────────────────────
+    // Meta Helper methods
 
-    /** % of max HP this move heals the user. 0 if no healing. */
+    // % of max HP this move heals the user. 0 if no healing.
     public int getHealPercent()  { return meta != null ? meta.getHealing() : 0; }
 
-    /** % of damage dealt that drains back. 0 if no drain. Negative = recoil. */
+    // % of damage dealt that drains back. 0 if no drain. Negative means recoil.
     public int getDrainPercent() { return meta != null ? meta.getDrain() : 0; }
 
-    /** Name of ailment inflicted, e.g. "paralysis". "none" or "" if none. */
+    // Name of ailment inflicted "paralysis". "none" or "" if none.
     public String getAilmentName() {
         if (meta == null || meta.getAilment() == null) return "none";
         return meta.getAilment().getName();
     }
 
-    /** % chance to inflict the ailment. 0 = never, 100 = always. */
+    // Chance of ailment being inflicted, 0 if no ailment.
     public int getAilmentChance() { return meta != null ? meta.getAilmentChance() : 0; }
 
-    /** True if this move targets the user (self-targeting moves like Recover). */
+    // Returns true if this move targets the user (for healing, stat boosts, etc), false if it targets the opponent.
     public boolean targetsUser() {
         return target != null && "user".equals(target.getName());
     }
 
-    /** Minimum number of turns (for multi-turn moves like sleep, bind). */
     public int getMinTurns() { return meta != null && meta.getMinTurns() != null ? meta.getMinTurns() : 0; }
     public int getMaxTurns() { return meta != null && meta.getMaxTurns() != null ? meta.getMaxTurns() : 0; }
 }

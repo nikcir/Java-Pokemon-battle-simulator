@@ -11,7 +11,7 @@ import com.nikolai.pokemon.moves.MoveSlot;
 
 public class BattlePokemon extends PokemonVariant implements Combatant {
 
-    // ── Stat stage indices ────────────────────────────────────────────────
+    // Stat change stage indices
     public static final int STAGE_ATK      = 0;
     public static final int STAGE_DEF      = 1;
     public static final int STAGE_SP_ATK   = 2;
@@ -21,7 +21,7 @@ public class BattlePokemon extends PokemonVariant implements Combatant {
     public static final int STAGE_EVASION  = 6;
     private static final int NUM_STAGES    = 7;
 
-    // ── Status condition constants ────────────────────────────────────────
+    // Status condition constants
     public static final String STATUS_NONE       = "none";
     public static final String STATUS_BURN       = "burn";
     public static final String STATUS_PARALYSIS  = "paralysis";
@@ -32,7 +32,7 @@ public class BattlePokemon extends PokemonVariant implements Combatant {
 
     private static final Random RNG = new Random();
 
-    // ── Core fields ───────────────────────────────────────────────────────
+    // Core data
 
     private final Pokemon pokemon;
     private final int level;
@@ -43,18 +43,15 @@ public class BattlePokemon extends PokemonVariant implements Combatant {
     private boolean isFainted;
     private int[] statStages = new int[NUM_STAGES];
 
-    // ── Status condition state ────────────────────────────────────────────
+    // Status condition counters
 
-    /** Current status: one of the STATUS_* constants. */
     private String statusCondition = STATUS_NONE;
 
-    /** How many turns of sleep remain (randomly 1-3 on infliction). */
     private int sleepTurnsRemaining = 0;
 
-    /** Bad-poison turn counter: damage scales as 1/16, 2/16, … per turn. */
     private int badPoisonCounter = 0;
 
-    // ── Constructor ───────────────────────────────────────────────────────
+    // Constructed from a Pokemon + level + nature, extracts stats and moves
 
     public BattlePokemon(Pokemon pokemon, int level, String nature) {
         this.pokemon = pokemon;
@@ -73,7 +70,7 @@ public class BattlePokemon extends PokemonVariant implements Combatant {
                 .toList();
     }
 
-    // ── Combatant interface ───────────────────────────────────────────────
+    // Combatant interface
 
     @Override public String getName()       { return name; }
     @Override public int getCurrentHp()    { return currentHp; }
@@ -87,7 +84,7 @@ public class BattlePokemon extends PokemonVariant implements Combatant {
         if (currentHp == 0) isFainted = true;
     }
 
-    /** Heals the pokemon by the given HP amount, capped at max HP. */
+    // Heals the pokemon by the given HP amount, capped at max HP
     public int heal(int amount) {
         if (isFainted) return 0;
         int before = currentHp;
@@ -105,18 +102,13 @@ public class BattlePokemon extends PokemonVariant implements Combatant {
         return (int) (adj * stageMult * paraFactor);
     }
 
-    // ── Status condition ──────────────────────────────────────────────────
-
-    /** Returns true if this pokemon has no status condition. */
+    // Returns true if this pokemon has no status condition
     public boolean hasNoStatus() {
         return STATUS_NONE.equals(statusCondition) || statusCondition == null || statusCondition.isBlank();
     }
 
-    /**
-     * Attempts to inflict a status condition. Fails silently if the pokemon
-     * already has a status, or if it's immune (fire can't be burned, etc.).
-     * @return true if the status was successfully applied
-     */
+    // Attempts to apply the given status condition. Returns true if successful, false if it failed (already has a status or is immune).
+
     public boolean applyStatus(String status) {
         if (!hasNoStatus()) return false; // already has a status
         if (!canBeAffected(status)) return false;
@@ -131,17 +123,15 @@ public class BattlePokemon extends PokemonVariant implements Combatant {
         return true;
     }
 
-    /** Cures the pokemon's status condition entirely. */
+    // Cures the pokemon's status condition entirely.
     public void cureStatus() {
         statusCondition = STATUS_NONE;
         sleepTurnsRemaining = 0;
         badPoisonCounter = 0;
     }
 
-    /**
-     * Processes end-of-turn status damage/effects.
-     * Returns a log string describing what happened, or null if nothing happened.
-     */
+    // applies end-of-turn damage from burn/poison and returns a log message describing the effect, or null if no damage/status.
+
     public String processEndOfTurnStatus() {
         if (hasNoStatus() || isFainted) return null;
 
@@ -166,13 +156,9 @@ public class BattlePokemon extends PokemonVariant implements Combatant {
         }
     }
 
-    /**
-     * Checks if this pokemon is blocked from acting by its status.
-     * Call at the start of its turn. Returns a log message if blocked, null if it can act.
-     *
-     * For sleep: decrements the counter. For paralysis: 25% chance to skip.
-     * For freeze: 20% chance to thaw (clears status, can act); otherwise blocked.
-     */
+    // Checks if the pokemon can act this turn based on its status condition. 
+    // Returns a log message if the move is blocked by status, or null if it can act.
+
     public String checkStatusBeforeMove() {
         if (hasNoStatus()) return null;
 
@@ -202,20 +188,21 @@ public class BattlePokemon extends PokemonVariant implements Combatant {
                 }
                 yield name + " is frozen solid!";
             }
-            default -> null; // burn/poison don't block the move
+            default -> null; // burn/poison dont block the move
         };
     }
 
-    /**
-     * Returns true if the pokemon's move was blocked by status.
-     * "Blocked" means the string is not null AND doesn't end with "woke up!" or "thawed out!"
-     */
+    // Checks if a status message indicates that the pokemon is currently blocked by a status condition: 
+    // ("is fast asleep", "is paralyzed and can't move", "is frozen solid"). 
+    // Returns false for messages indicating the pokemon just woke up or thawed out.
+
     public static boolean isBlockedByStatus(String statusMessage) {
         if (statusMessage == null) return false;
         return !statusMessage.endsWith("woke up!") && !statusMessage.endsWith("thawed out!");
     }
 
-    /** Returns a short display string for the current status, e.g. "BRN", "PAR", "PSN". */
+    // Converts the status condition to 3-letter string for display, or empty string if no status.
+
     public String getStatusDisplayName() {
         return switch (statusCondition) {
             case STATUS_BURN       -> "BRN";
@@ -227,6 +214,8 @@ public class BattlePokemon extends PokemonVariant implements Combatant {
             default                -> "";
         };
     }
+
+    // Checks if the pokemon can be affected by the given status condition based on its types. Returns true if it can be affected, false if it is immune.
 
     private boolean canBeAffected(String status) {
         if (pokemon == null || pokemon.getTypes() == null) return true;
@@ -243,7 +232,7 @@ public class BattlePokemon extends PokemonVariant implements Combatant {
         };
     }
 
-    // ── Stat stage ────────────────────────────────────────────────────────
+    // Stat stages
 
     public int getStatStage(int idx) {
         return (idx >= 0 && idx < NUM_STAGES) ? statStages[idx] : 0;
@@ -273,7 +262,7 @@ public class BattlePokemon extends PokemonVariant implements Combatant {
 
     public void resetStatStages() { Arrays.fill(statStages, 0); }
 
-    /** e.g. "+2 ATK / -1 DEF" — empty string if all 0. */
+    // For example, "+1 ATK / -2 DEF"
     public String getStatStageDisplay() {
         String[] labels = {"ATK","DEF","SP.ATK","SP.DEF","SPE","ACC","EVA"};
         StringBuilder sb = new StringBuilder();
@@ -286,7 +275,7 @@ public class BattlePokemon extends PokemonVariant implements Combatant {
         return sb.toString();
     }
 
-    // ── Level-adjusted stats ──────────────────────────────────────────────
+    // Level and nature adjustments for stats
 
     public int getAdjustedStat(String statName) {
         int base = StatCalculator.getBase(pokemon, statName);
@@ -298,14 +287,14 @@ public class BattlePokemon extends PokemonVariant implements Combatant {
         return StatCalculator.statSummary(pokemon, level, nature);
     }
 
-    // ── Getters ───────────────────────────────────────────────────────────
+    // Getters
 
     public Pokemon getPokemon()           { return pokemon; }
     public int     getLevel()             { return level; }
     public String  getNature()            { return nature; }
     public String  getStatusCondition()   { return statusCondition; }
 
-    /** Returns the Move object at the given index, or null if invalid. */
+    // returns the Move object for the move in the given move slot index (0-3)
     public Move getMove(int index) {
         var slots = pokemon.getMoves();
         if (index < 0 || index >= slots.size()) return null;
