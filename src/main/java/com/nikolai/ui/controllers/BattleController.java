@@ -2,6 +2,7 @@ package com.nikolai.ui.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -127,6 +128,13 @@ public class BattleController {
         // null myActive so every healthy pokemon is selectable
         updateSwitchPanel(myTeam, null);
         refreshPartyRows();
+
+        // Show fainted pokemon in grayscale on the field while choosing a replacement
+        if (mode == Mode.FAINT_P1 || mode == Mode.FAINT_P2) {
+            updatePlayerSide(playerActive(playerNum));
+            updateOpponentSide(opponentActive(playerNum));
+        }
+
         showPanel(switchPanel);
         hideForfeitOverlay();
     }
@@ -182,10 +190,10 @@ public class BattleController {
 
     /** Refreshes both party icon rows and their tooltips. */
     private void refreshPartyRows() {
-        updatePartyDisplay(playerTeam(1),   playerSlotIcons(), playerSlotButtons());
-        updatePartyDisplay(playerTeam(2),   oppSlotIcons(),    oppSlotButtons());
-        attachPartyTooltips(playerTeam(1),  playerSlotButtons());
-        attachPartyTooltips(playerTeam(2),  oppSlotButtons());
+        updatePartyDisplay(playerTeam(currentPlayerTurn),    playerSlotIcons(), playerSlotButtons());
+        updatePartyDisplay(opponentTeam(currentPlayerTurn),  oppSlotIcons(),    oppSlotButtons());
+        attachPartyTooltips(playerTeam(currentPlayerTurn),   playerSlotButtons());
+        attachPartyTooltips(opponentTeam(currentPlayerTurn), oppSlotButtons());
     }
 
     private void handleAction(int action) {
@@ -260,6 +268,15 @@ public class BattleController {
         if (plyrPoke1HpStatusBar != null)
             plyrPoke1HpStatusBar.setText("HP " + mine.getCurrentHp() + "/" + mine.getMaxHp());
         setSprite(plyrPoke1Sprite, poke);
+        if (plyrPoke1Sprite != null) {
+            if (mine.isFainted()) {
+                ColorAdjust gray = new ColorAdjust();
+                gray.setSaturation(-1.0);
+                plyrPoke1Sprite.setEffect(gray);
+            } else {
+                plyrPoke1Sprite.setEffect(null);
+            }
+        }
     }
 
     private void updateOpponentSide(BattlePokemon opp) {
@@ -274,6 +291,15 @@ public class BattleController {
         updateHpBar(oppPoke1HpTrack, oppPoke1HpFill, opp);
         updateHpNumLabel(oppPoke1HpNumLabel, opp);
         setSprite(oppPoke1Sprite, poke);
+        if (oppPoke1Sprite != null) {
+            if (opp.isFainted()) {
+                ColorAdjust gray = new ColorAdjust();
+                gray.setSaturation(-1.0);
+                oppPoke1Sprite.setEffect(gray);
+            } else {
+                oppPoke1Sprite.setEffect(null);
+            }
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════

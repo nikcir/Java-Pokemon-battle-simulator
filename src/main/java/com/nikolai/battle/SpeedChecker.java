@@ -16,8 +16,4 @@ public class SpeedChecker {
         return RNG.nextBoolean() ? a : b;
     }
 
-    /** Backwards-compat alias. */
-    public static boolean P1FasterThanP2(BattlePokemon p1, BattlePokemon p2) {
-        return isFaster(p1, p2);
-    }
 }

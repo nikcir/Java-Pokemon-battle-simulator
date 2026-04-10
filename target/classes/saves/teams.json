@@ -170,6 +170,45 @@
     }
   ],
 
+  "status-test": [
+    {
+      "name": "jolteon",
+      "heldItem": "leftovers",
+      "moves": ["thunder-wave", "thunderbolt", "shadow-ball", "quick-attack"],
+      "nature": "timid"
+    },
+    {
+      "name": "gengar",
+      "heldItem": "life-orb",
+      "moves": ["will-o-wisp", "hypnosis", "hex", "shadow-ball"],
+      "nature": "timid"
+    },
+    {
+      "name": "toxapex",
+      "heldItem": "black-sludge",
+      "moves": ["toxic", "scald", "recover", "haze"],
+      "nature": "bold"
+    },
+    {
+      "name": "breloom",
+      "heldItem": "focus-sash",
+      "moves": ["spore", "mach-punch", "seed-bomb", "bulk-up"],
+      "nature": "adamant"
+    },
+    {
+      "name": "ninetales",
+      "heldItem": "leftovers",
+      "moves": ["will-o-wisp", "flamethrower", "hex", "nasty-plot"],
+      "nature": "timid"
+    },
+    {
+      "name": "togekiss",
+      "heldItem": "choice-scarf",
+      "moves": ["thunder-wave", "air-slash", "nasty-plot", "aura-sphere"],
+      "nature": "timid"
+    }
+  ],
+
   "hyper-offense": [
     {
       "name": "deoxys-speed",
