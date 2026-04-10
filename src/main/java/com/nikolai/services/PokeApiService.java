@@ -72,15 +72,15 @@ public class PokeApiService {
      * @deprecated Use buildMoveSlots(chosenMoveNames) instead.
      * This fetches ALL learnable moves which is very slow and includes stubs.
      */
-    @Deprecated
-    public void populateMoves(List<MoveSlot> moveSlots) throws Exception {
-        if (moveSlots == null) return;
-        for (MoveSlot slot : moveSlots) {
-            if (slot == null || slot.getMove() == null) continue;
-            String name = slot.getMove().getName();
-            if (name == null || name.isBlank()) continue;
-            Move full = getMoveData(name);
-            if (full != null) { slot.setMove(full); slot.setCurrentPp(full.getPp()); }
-        }
-    }
+    // @Deprecated
+    // public void populateMoves(List<MoveSlot> moveSlots) throws Exception {
+    //     if (moveSlots == null) return;
+    //     for (MoveSlot slot : moveSlots) {
+    //         if (slot == null || slot.getMove() == null) continue;
+    //         String name = slot.getMove().getName();
+    //         if (name == null || name.isBlank()) continue;
+    //         Move full = getMoveData(name);
+    //         if (full != null) { slot.setMove(full); slot.setCurrentPp(full.getPp()); }
+    //     }
+    // }
 }
