@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "com.nikolai.ui.App",
+            "projectName": "pokedex"
+        },
+        {
+            "type": "java",
             "name": "Launch JavaFX App",
             "request": "launch",
             "mainClass": "com.nikolai.App",
