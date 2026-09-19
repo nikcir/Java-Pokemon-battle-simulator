@@ -1,10 +1,20 @@
-A pokemon battle simulator made using javaFX, fetching data using an API
+# Pokémon Battle Simulator
 
-Origin:
-originally made for the subject Object oriented programming made by me
+A JavaFX-based Pokémon battle simulator that fetches live data from the PokeAPI and simulates turn-based battles using type effectiveness, status conditions, stat changes, healing moves, and switching mechanics.
 
-The program fetches data from the pokeAPI: https://pokeapi.co/?ref=public-apis
-And stores the needed data locally using JSON to minimize latensy.
+This project was originally created for an Object-Oriented Programming course and expanded into a playable battle system. The app uses the public PokeAPI for Pokémon and move data and stores local team data in JSON/text files to reduce repeated API calls.
+
+The program includes several main features:
+
+- Pokémon search and data lookup
+- Team creation and saving
+- Battle simulation with turn order and battle log
+- Type advantages and weaknesses
+- Status effects and stat-changing moves
+- Healing and draining abilities
+- Team switching mechanics
+
+The program fetches data from the PokeAPI: https://pokeapi.co/?ref=public-apis
 
 The program consists of different parts:
 <img width="478" height="283" alt="{70477667-FC2A-43ED-81DE-A4ACE7566D52}" src="https://github.com/user-attachments/assets/b1572116-f626-4923-bee1-14f98ec7d435" />
@@ -36,10 +46,56 @@ Pokemon is a complex game so not everything is implemented, but here are some of
 <img width="479" height="159" alt="{BE30C603-09F6-4A07-BD76-9DAED467BF97}" src="https://github.com/user-attachments/assets/c088e19c-8eec-46cf-8ce8-88e08c0c5fda" />
 
 
+## Requirements
 
+- Java 21 JDK: https://adoptium.net/temurin/releases/?version=21
+- Maven: https://maven.apache.org/download.cgi
 
+JavaFX, Gson, and JUnit are managed by Maven through [pom.xml](pom.xml), so they are downloaded automatically when you build the project.
 
+## Setup and installation
 
+1. Install Java 21 JDK and make sure `JAVA_HOME` is set.
+2. Install Maven and add it to your system `PATH`.
+3. Clone the project:
+
+   ```bash
+   git clone https://github.com/your-username/Java-Pokemon-battle-simulator.git
+   cd Java-Pokemon-battle-simulator
+   ```
+
+4. Download or ensure the required dependencies are available. The project uses Maven, so JavaFX, Gson, and JUnit are downloaded automatically when you build the project.
+5. Verify the project builds:
+
+   ```bash
+   mvn clean test
+   ```
+
+## How to run the application
+
+From the project root, run:
+
+```bash
+mvn javafx:run
+```
+
+This project is configured with the JavaFX Maven plugin and points to the main application class:
+
+```text
+com.nikolai.ui.App
+```
+
+If you want to run the app from an IDE instead, use the project as a Maven JavaFX project and configure the main class as `com.nikolai.ui.App`.
+
+## Dependency summary
+
+| Dependency | Version | Download |
+| --- | --- | --- |
+| Java JDK | 21 | https://adoptium.net/temurin/releases/?version=21 |
+| Maven | Latest stable | https://maven.apache.org/download.cgi |
+| JavaFX | 17.0.2 | https://gluonhq.com/products/javafx/ |
+| Gson | 2.10.1 | https://repo1.maven.org/maven2/com/google/code/gson/gson/2.10.1/ |
+| JUnit Jupiter | 5.11.0 | https://repo1.maven.org/maven2/org/junit/jupiter/ |
 
 
 
