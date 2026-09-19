@@ -33,7 +33,6 @@ Pokemon is a complex game so not everything is implemented, but here are some of
 <img width="960" height="523" alt="{8015A5D4-CDE4-4572-B2DC-46B6B14E95FC}" src="https://github.com/user-attachments/assets/899ae379-29b7-4566-8e64-0d5b838bff56" />
 <img width="960" height="520" alt="{32FE90EE-36B6-4839-95B2-C668875BF61F}" src="https://github.com/user-attachments/assets/fa3cceb0-def3-45d8-ba6c-70609296dd8f" />
 <img width="960" height="523" alt="{B7E7D21D-047C-4767-A0F2-C05114C30698}" src="https://github.com/user-attachments/assets/243c263a-48fb-447f-a3f6-e4c28a973381" />
-<img width="960" height="524" alt="{A80869A6-B65D-4AEE-8470-C8061D6C372A}" src="https://github.com/user-attachments/assets/35412406-16d7-4bec-a4a5-fa757b00773a" />
 <img width="479" height="159" alt="{BE30C603-09F6-4A07-BD76-9DAED467BF97}" src="https://github.com/user-attachments/assets/c088e19c-8eec-46cf-8ce8-88e08c0c5fda" />
 
 
